@@ -8,7 +8,6 @@ model_VAE = function(data, encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, 
   input_data <-  as.matrix(data)
   #encoder
   encoder = encoder_model(encoder_input=input_data, encoder_info=encoder_info, latent_dim=latent_dim, beta=beta,Lip_en=Lip_en, pi_enc=pi_enc,prior=prior,K=K,learnable_mog=learnable_mog,mog_means=mog_means, mog_log_vars=mog_log_vars, mog_weights=mog_weights )
-  #Consider having a list of bottlenecks and activation instead of separate inputs
   #Decoder
   decoder = decoder_model(encoder$output[[1]], decoder_info=decoder_info,latent_dim=latent_dim, feat_dist=feat_dist,lip_dec=lip_dec, pi_dec=pi_dec,max_std=max_std , min_val=min_val,temperature = temperature )
 

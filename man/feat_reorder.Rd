@@ -2,20 +2,31 @@
 % Please edit documentation in R/extracting_distribution.R
 \name{feat_reorder}
 \alias{feat_reorder}
-\title{If feat_dist is misordered, the function feat_reorder can be applied.
-The user wants the rows of feat_order to match the order of the pre-processed dataset that will be used for training the VAE.
-Feat_order ensures the row order in feat_dist matches the order in the input dataset.}
+\title{Reorder \code{feat_dist} rows to match preprocessed data}
 \usage{
 feat_reorder(feat_dist, data)
 }
 \arguments{
-\item{feat_dist, data}{feat_dist is the output of extracting_distribution. Data is your pre-processed data.}
+\item{feat_dist}{Data frame from \code{\link[=extracting_distribution]{extracting_distribution()}}.}
+
+\item{data}{Data frame of the \strong{original (preprocessed)} variables.}
 }
 \value{
-feat_dist that is in the same order as the pre-processed data going into the VAE
+The input \code{feat_dist}, reordered to align with \code{data}.
 }
 \description{
-If feat_dist is misordered, the function feat_reorder can be applied.
-The user wants the rows of feat_order to match the order of the pre-processed dataset that will be used for training the VAE.
-Feat_order ensures the row order in feat_dist matches the order in the input dataset.
+Ensures row order in \code{feat_dist} matches the \strong{column prefix order} in the
+preprocessed (dummy-coded) training data. This assumes dummy columns are
+named as \verb{<original_name>_<level>} and therefore start with the original
+variable name.
+}
+\examples{
+\dontrun{
+feat_dist = feat_reorder(extracting_distribution(data_final),data)
+rownames(feat_dist) = NULL
+set_feat_dist(feat_dist)
+}
+}
+\seealso{
+\code{\link[=extracting_distribution]{extracting_distribution()}}, \code{\link[=set_feat_dist]{set_feat_dist()}}
 }

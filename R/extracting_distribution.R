@@ -1,14 +1,67 @@
 ###############################
 #Getting Feature Distributions#
 ###############################
-#' Extracting_Distribution will create feat_dist which will be used throughout the package.
-#' There is one row per variable. Column one, column_name, indicates the names of the variables in the dataset.
-#'  Column two, distribution, indicates the type of distribution the variable falls under.
-#'  There are three options, Gaussian, Bernoulli, and categorical.
-#'  Column three, num_params, indicates how many parameters the VAE should produce for the given variable.
+#' Build the `feat_dist` data frame for AutoTab
 #'
-#' @param data Your original input data, prior to pre-processing
-#' @return feat_dist which is used in AutoTab to define variable distribution types
+#' Creates one row per original variable with columns:
+#' - `column_name`: variable name
+#' - `distribution`: one of `"gaussian"`, `"bernoulli"`, or `"categorical"`
+#' - `num_params`: number of decoder outputs the VAE should produce for that variable
+#'
+#' A variable is classified as:
+#' - **bernoulli** if it has exactly 2 unique values (any type)
+#' - **categorical** if it is a character/factor with more than 2 unique values
+#' - **gaussian** otherwise (e.g., numeric with >2 distinct values)
+#'
+#' @details
+#' In AutoTab, the decoder outputs **distribution-specific parameters** for each variable,
+#' not reconstructed values directly. Therefore:
+#'
+#' - **Continuous (Gaussian)** variables output **two parameters** per feature:
+#'   the mean (`μ`) and the standard deviation (`σ`).
+#' - **Binary (Bernoulli)** variables output **one parameter**:
+#'   the probability (`p`) of observing a 1.
+#' - **Categorical** variables output **one parameter per category level**:
+#'   the probabilities corresponding to each possible class.
+#'
+#' As a result, the **decoder output matrix** will typically have **more columns**
+#' than the original training data.
+#'
+#' For example, if your original dataset has:
+#' ```
+#' 1 continuous variable   →  2 decoder parameters
+#' 1 binary variable       →  1 decoder parameter
+#' 1 categorical variable with 3 levels → 3 decoder parameters
+#' ```
+#' The total number of decoder outputs will be **2 + 1 + 3 = 6**, even though the
+#' input data has only 3 original variables.
+#'
+#' AutoTab keeps track of this mapping internally through the `feat_dist` object,
+#' ensuring that the reconstruction loss and sampling functions correctly handle
+#' each distributional head.
+#'
+#' @param data Data frame of the **original (preprocessed)** variables.
+#' @return A data frame with columns `column_name`, `distribution`, and `num_params`.
+#'
+#' @examples
+#' \dontrun{
+#' data_example <- data.frame(
+#'   cont = rnorm(5),
+#'   bin  = c(0,1,0,1,1),
+#'   cat  = factor(c("A","B","C","A","C"))
+#' )
+#'
+#' feat_dist <- extracting_distribution(data_example)
+#' print(feat_dist)
+#' # column_name distribution num_params
+#' # 1        cont      gaussian          2
+#' # 2         bin     bernoulli          1
+#' # 3         cat    categorical          3
+#'
+#' # The decoder will therefore output 6 total columns (2+1+3)
+#' }
+#'
+#' @seealso [feat_reorder()], [set_feat_dist()]
 #' @export
 extracting_distribution = function(data){
   # Create a data set that the following information will fill in
@@ -32,12 +85,24 @@ extracting_distribution = function(data){
 
 
 #Make sure order matches the data
-#' If feat_dist is misordered, the function feat_reorder can be applied.
-#' The user wants the rows of feat_order to match the order of the pre-processed dataset that will be used for training the VAE.
-#' Feat_order ensures the row order in feat_dist matches the order in the input dataset.
+#' Reorder `feat_dist` rows to match preprocessed data
 #'
-#' @param feat_dist,data feat_dist is the output of extracting_distribution. Data is your pre-processed data.
-#' @return feat_dist that is in the same order as the pre-processed data going into the VAE
+#' Ensures row order in `feat_dist` matches the **column prefix order** in the
+#' preprocessed (dummy-coded) training data. This assumes dummy columns are
+#' named as `<original_name>_<level>` and therefore start with the original
+#' variable name.
+#'
+#' @param feat_dist Data frame from [extracting_distribution()].
+#' @param data Data frame of the **original (preprocessed)** variables.
+#' @return The input `feat_dist`, reordered to align with `data`.
+#'
+#' @examples
+#' \dontrun{
+#' feat_dist = feat_reorder(extracting_distribution(data_final),data)
+#' rownames(feat_dist) = NULL
+#' set_feat_dist(feat_dist)
+#' }
+#' @seealso [extracting_distribution()], [set_feat_dist()]
 #' @export
 feat_reorder = function(feat_dist,data){
   #Reorder to match the order in the data

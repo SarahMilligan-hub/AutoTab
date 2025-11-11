@@ -1,33 +1,32 @@
----
-output: github_document
----
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
 
 # AutoTab
 
-AutoTab is a flexible R package for training Variational Autoencoders (VAEs) on heterogeneous tabular data.
-It supports continuous, binary, and categorical variables within a single model and includes a custom loss function and decoder architecture that automatically handles each distribution type.
+AutoTab is a flexible R package for training Variational Autoencoders
+(VAEs) on heterogeneous tabular data. It supports continuous, binary,
+and categorical variables within a single model and includes a custom
+loss function and decoder architecture that automatically handles each
+distribution type.
 
-In the decoder, the final activation layer slices the output tensor by distribution, preserving a single amortized decoder with shared hidden layers that jointly map the latent space to all observed variables.
-The reconstruction loss is computed as the sum of distribution-specific likelihoods, consistent with the VAE evidence lower bound (ELBO).
+In the decoder, the final activation layer slices the output tensor by
+distribution, preserving a single amortized decoder with shared hidden
+layers that jointly map the latent space to all observed variables. The
+reconstruction loss is computed as the sum of distribution-specific
+likelihoods, consistent with the VAE evidence lower bound (ELBO).
 
-AutoTab extends beyond the standard (vanilla) VAE framework and allows users to integrate several well-known extensions from the VAE literature. Refer to the function-level R documentation for all available options.
+AutoTab extends beyond the standard (vanilla) VAE framework and allows
+users to integrate several well-known extensions from the VAE
+literature. Refer to the function-level R documentation for all
+available options.
 
 ## Installation
 
-When loading the package via library(AutoTab), AutoTab will remind you to activate your reticulate/conda environment before running any model functions.
-AutoTab requires TensorFlow 2.10.0 within the active Python environment.
+When loading the package via library(AutoTab), AutoTab will remind you
+to activate your reticulate/conda environment before running any model
+functions. AutoTab requires TensorFlow 2.10.0 within the active Python
+environment.
 
-AutoTab was developed under Python 3.10.8 and numpy 1.26.4.
-If compatibility issues arise, recreate your environment with this version.
+AutoTab was developed under Python 3.10.8 and numpy 1.26.4. If
+compatibility issues arise, recreate your environment with this version.
 
 ``` r
 # Install from GitHub
@@ -40,9 +39,9 @@ library(AutoTab)
 
 ## Example
 
-Below is a basic example of running a VAE training iteration. 
+Below is a basic example of running a VAE training iteration.
 
-```{r AutoTab_example , eval = FALSE}
+``` r
 library(AutoTab)
 
 #The data used in this example is simulated data that contains 1 contiuous, 1 binary, and one categorical variable. 
@@ -152,13 +151,13 @@ sample_latent <- Latent_sample(z_mean, z_log_var)
 decoder_sample <- keras::predict(decoder, as.matrix(sample_latent))
 decoder_sample <- as.data.frame(decoder_sample)
 }
-
 ```
 
 # Citing AutoTab
+
 If you use AutoTab in your research, please cite:
 
-Milligan, S. (2025). AutoTab: Variational Autoencoder for Heterogeneous Tabular Data. Boston University, Department of Biostatistics.
+Milligan, S. (2025). AutoTab: Variational Autoencoder for Heterogeneous
+Tabular Data. Boston University, Department of Biostatistics.
 
-#License
-MIT © 2025 Sarah Milligan
+\#License MIT © 2025 Sarah Milligan

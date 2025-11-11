@@ -102,8 +102,71 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #########
 #Decoder#
 #########
-#' @keywords internal
-decoder_model = function(decoder_input, decoder_info, latent_dim, feat_dist,lip_dec, pi_dec=1,max_std=10.0,min_val=1e-3, temperature=0.5){
+#' Builds the decoder graph for an AutoTab VAE
+#'
+#' Reconstructs the **decoder** computational graph used during training. This is used
+#' internally by `VAE_train()` and externally when you want to load the trained
+#' decoder weights and generate new samples by sampling the latent space.
+#'
+#' @details
+#' The final output layer of a AutoTab decoder slices outputs by feature distribution in `feat_dist`:
+#' Gaussian heads output mean/SD (with `min_val`/`max_std` constraints),
+#' Bernoulli heads output logits passed through sigmoid to extract probabilities,
+#' and Categorical heads use Gumbel–Softmax with the given `temperature`.
+#'
+#' If `lip_dec = 1`, dense hidden layers are wrapped with TensorFlow Addons
+#' spectral normalization using `pi_dec` power iterations.
+#'
+#' @param decoder_input Ignored; pass `NULL`. No input is needed when building the compitational graph.
+#' @param decoder_info List defining the decoder architecture, e.g.
+#'   `list(list("dense", 80, "relu"), list("dropout", 0.1), list("dense", 100, "relu"))`.
+#'   Each `dense` entry is `list("dense", units, activation)`. Each `dropout`
+#'   entry is `list("dropout", rate)`. Optional elements:
+#'   `[[4]]` L2 flag (0/1), `[[5]]` L2 value, `[[6]]` BN flag (FALSE/TRUE),
+#'   `[[7]]` BN momentum, `[[8]]` BN scale/center (TRUE/FALSE).
+#' @param latent_dim Integer. Latent dimension used during training.
+#' @param feat_dist Data frame with columns `column_name`, `distribution`, `num_params`
+#'   (created by `extracting_distribution()` and set via `set_feat_dist()`).
+#' @param lip_dec 0/1 (logical). Use spectral normalization on dense hidden layers.
+#' @param pi_dec Integer. Power-iteration count for spectral normalization.
+#' @param max_std Numeric. Upper bound for Gaussian SD heads (default `10.0`).
+#' @param min_val Numeric. Lower bound (epsilon) for Gaussian SD heads (default `1e-3`).
+#' @param temperature Numeric. Gumbel–Softmax temperature for categorical heads (default `0.5`).
+#'
+#' @return A compiled **Keras model** representing the decoder computational graph. You can
+#'   load trained decoder weights with `Decoder_weights()` + `set_weights()`, then
+#'   call `predict(decoder, Z)` where `Z` is an `n x latent_dim` matrix (typically a sample from your latent space).
+#'
+#' @examples
+#' \dontrun{
+#' # Assume you already have feat_dist set via set_feat_dist(feat_dist)
+#' decoder_info <- list(list("dense", 80, "relu"), list("dense", 100, "relu"))
+#' dec <- decoder_model(
+#'   decoder_input = NULL,
+#'   decoder_info  = decoder_info,
+#'   latent_dim    = 5,
+#'   feat_dist     = feat_dist,
+#'   lip_dec       = 0,
+#'   pi_dec        = 0,
+#'   max_std       = 10,
+#'   min_val       = 1e-3,
+#'   temperature   = 0.5
+#' )
+#'
+#' # After training, load weights and sample:
+#' # w_dec <- Decoder_weights(encoder_layers = 2, trained_model = training$trained_model,
+#' #                          lip_enc = 0, pi_enc = 0, prior_learn = "fixed",
+#' #                          BNenc_layers = 0, learn_BN = 0)
+#' # dec %>% keras::set_weights(w_dec)
+#' # Z <- matrix(rnorm(10 * 5), nrow = 10)
+#' #A mock sample from the latent space. In true execution use Latent_sample()
+#' # VAE_sample <- keras::predict(dec, Z)
+#' }
+#'
+#' @seealso [VAE_train()], [Decoder_weights()], [encoder_latent()], [Latent_sample()], [extracting_distribution()]
+#' @export
+
+decoder_model = function(decoder_input, decoder_info, latent_dim, feat_dist,lip_dec, pi_dec,max_std=10.0,min_val=1e-3, temperature=0.5){
   tf = tensorflow::tf
   #Creating spectral normalization option
   tfa = get_tfa()

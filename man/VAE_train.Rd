@@ -2,7 +2,7 @@
 % Please edit documentation in R/training.R
 \name{VAE_train}
 \alias{VAE_train}
-\title{This will call your VAE training. Ensure you have your encoder_info and decoder_info.}
+\title{Train an AutoTab VAE on mixed-type tabular data}
 \usage{
 VAE_train(
   data,
@@ -25,7 +25,7 @@ VAE_train(
   temp_epoch,
   batchsize,
   wait,
-  min_delta,
+  min_delta = 0.001,
   lr,
   max_std = 10,
   min_val,
@@ -40,9 +40,95 @@ VAE_train(
   mog_weights = NULL
 )
 }
+\arguments{
+\item{data}{Matrix/data.frame. \strong{Preprocessed} training data (columns match
+the order in \code{feat_dist}).}
+
+\item{encoder_info, decoder_info}{Lists describing layer stacks. Each element
+is e.g. \code{list("dense", units, "activation", L2_flag, L2_lambda, BN_flag, BN_momentum, BN_learn)} or
+\code{list("dropout", rate)}.}
+
+\item{Lip_en, lip_dec}{Integer (0/1). Use spectral normalization (Lipschitz)
+in encoder/decoder.}
+
+\item{pi_enc, pi_dec}{Integer. Power-iteration counts for spectral normalization.}
+
+\item{latent_dim}{Integer. Latent dimensionality.}
+
+\item{epoch}{Integer. Max training epochs.}
+
+\item{beta}{Numeric. β-VAE weight on the KL term in the ELBO.}
+
+\item{kl_warm}{Logical. Enable β-annealing.}
+
+\item{kl_cyclical}{Logical. Enable \strong{cyclical} β-annealing (requires \code{kl_warm = TRUE}).}
+
+\item{n_cycles}{Integer. Number of cycles when \code{kl_cyclical = TRUE}.}
+
+\item{ratio}{Numeric from range 0 to 1. Fraction of each cycle used for warm-up (rise from 0→β).}
+
+\item{beta_epoch}{Integer. Warm-up length (epochs) for \strong{linear} β-annealing; when
+\code{kl_cyclical = TRUE}, the cycle length is \code{(beta_epoch / n_cycles)}.}
+
+\item{temperature}{Numeric. Gumbel-softmax temperature (used for categorical heads).}
+
+\item{temp_warm}{Logical. Enable temperature warm-up.}
+
+\item{temp_epoch}{Integer. Warm-up length (epochs) for temperature when \code{temp_warm = TRUE}.}
+
+\item{batchsize}{Integer. Mini-batch size.}
+
+\item{wait}{Integer. Early-stopping patience (epochs) on validation reconstruction loss.}
+
+\item{min_delta}{Numeric. Minimum improvement to reset patience (early stopping).}
+
+\item{lr}{Numeric. Learning rate (Adam).}
+
+\item{max_std, min_val}{Numerics. Decoder constraints for Gaussian heads
+(max SD; minimum variance surrogate).}
+
+\item{weighted}{Integer (0/1). If 1, weight reconstruction terms by type.}
+
+\item{recon_weights}{Numeric length-3. Weights for (continuous, binary, categorical);
+\strong{required} when \code{weighted = 1}.}
+
+\item{seperate}{Integer (0/1). If 1, logs per-group reconstruction losses as metrics
+(\code{cont_loss}, \code{bin_loss}, \code{cat_loss}) in addition to total \code{recon_loss}.}
+
+\item{prior}{Character. \code{"single_gaussian"} or \code{"mixture_gaussian"}.}
+
+\item{K}{Integer. Number of mixture components when \code{prior = "mixture_gaussian"}.}
+
+\item{learnable_mog}{Logical. If TRUE, MoG prior parameters are trainable.}
+
+\item{mog_means, mog_log_vars, mog_weights}{Optional initial values for the MoG prior
+(ignored unless \code{prior = "mixture_gaussian"}; when \code{learnable_mog = FALSE} they must be provided).}
+}
 \value{
-your training step
+A list with:
+\itemize{
+\item \code{trained_model} — the compiled Keras model (encoder→decoder) with KL and recon losses added.
+\item \code{loss_history} — numeric vector of per-epoch total loss (as tracked during training).
+}
 }
 \description{
-This will call your VAE training. Ensure you have your encoder_info and decoder_info.
+Runs the full AutoTab training loop (encoder + decoder + latent space),
+with optional β-annealing (linear or cyclical), optional Gumbel-softmax
+temperature warming for categorical outputs, and options for the prior.
+}
+\details{
+\strong{Prerequisite:} call \code{\link[=set_feat_dist]{set_feat_dist()}} once before training to register the
+per-feature distributions and parameter counts (see \code{\link[=extracting_distribution]{extracting_distribution()}}
+and \code{\link[=feat_reorder]{feat_reorder()}}).
+
+\strong{Metrics exposed during training:} \code{loss}, \code{recon_loss}, \code{kl_loss}, and,
+when \code{seperate = 1}, \code{cont_loss}, \code{bin_loss}, \code{cat_loss}.
+
+\strong{Early stopping:} monitored on \code{val_recon_loss} with \code{patience = wait}.
+
+\strong{Reproducibility:} set seeds via your own workflow or the helper \code{reset_seeds()}.
+}
+\seealso{
+\code{\link[=set_feat_dist]{set_feat_dist()}}, \code{\link[=extracting_distribution]{extracting_distribution()}}, \code{\link[=feat_reorder]{feat_reorder()}},
+\code{\link[=Encoder_weights]{Encoder_weights()}}, \code{\link[=encoder_latent]{encoder_latent()}}, \code{\link[=Decoder_weights]{Decoder_weights()}}, \code{\link[=Latent_sample]{Latent_sample()}}
 }

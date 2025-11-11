@@ -2,24 +2,79 @@
 % Please edit documentation in R/extracting_distribution.R
 \name{extracting_distribution}
 \alias{extracting_distribution}
-\title{Extracting_Distribution will create feat_dist which will be used throughout the package.
-There is one row per variable. Column one, column_name, indicates the names of the variables in the dataset.
-Column two, distribution, indicates the type of distribution the variable falls under.
-There are three options, Gaussian, Bernoulli, and categorical.
-Column three, num_params, indicates how many parameters the VAE should produce for the given variable.}
+\title{Build the \code{feat_dist} data frame for AutoTab}
 \usage{
 extracting_distribution(data)
 }
 \arguments{
-\item{data}{Your original input data, prior to pre-processing}
+\item{data}{Data frame of the \strong{original (preprocessed)} variables.}
 }
 \value{
-feat_dist which is used in AutoTab to define variable distribution types
+A data frame with columns \code{column_name}, \code{distribution}, and \code{num_params}.
 }
 \description{
-Extracting_Distribution will create feat_dist which will be used throughout the package.
-There is one row per variable. Column one, column_name, indicates the names of the variables in the dataset.
-Column two, distribution, indicates the type of distribution the variable falls under.
-There are three options, Gaussian, Bernoulli, and categorical.
-Column three, num_params, indicates how many parameters the VAE should produce for the given variable.
+Creates one row per original variable with columns:
+\itemize{
+\item \code{column_name}: variable name
+\item \code{distribution}: one of \code{"gaussian"}, \code{"bernoulli"}, or \code{"categorical"}
+\item \code{num_params}: number of decoder outputs the VAE should produce for that variable
+}
+}
+\details{
+A variable is classified as:
+\itemize{
+\item \strong{bernoulli} if it has exactly 2 unique values (any type)
+\item \strong{categorical} if it is a character/factor with more than 2 unique values
+\item \strong{gaussian} otherwise (e.g., numeric with >2 distinct values)
+}
+
+In AutoTab, the decoder outputs \strong{distribution-specific parameters} for each variable,
+not reconstructed values directly. Therefore:
+\itemize{
+\item \strong{Continuous (Gaussian)} variables output \strong{two parameters} per feature:
+the mean (\code{μ}) and the standard deviation (\code{σ}).
+\item \strong{Binary (Bernoulli)} variables output \strong{one parameter}:
+the probability (\code{p}) of observing a 1.
+\item \strong{Categorical} variables output \strong{one parameter per category level}:
+the probabilities corresponding to each possible class.
+}
+
+As a result, the \strong{decoder output matrix} will typically have \strong{more columns}
+than the original training data.
+
+For example, if your original dataset has:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{1 continuous variable   →  2 decoder parameters
+1 binary variable       →  1 decoder parameter
+1 categorical variable with 3 levels → 3 decoder parameters
+}\if{html}{\out{</div>}}
+
+The total number of decoder outputs will be \strong{2 + 1 + 3 = 6}, even though the
+input data has only 3 original variables.
+
+AutoTab keeps track of this mapping internally through the \code{feat_dist} object,
+ensuring that the reconstruction loss and sampling functions correctly handle
+each distributional head.
+}
+\examples{
+\dontrun{
+data_example <- data.frame(
+  cont = rnorm(5),
+  bin  = c(0,1,0,1,1),
+  cat  = factor(c("A","B","C","A","C"))
+)
+
+feat_dist <- extracting_distribution(data_example)
+print(feat_dist)
+# column_name distribution num_params
+# 1        cont      gaussian          2
+# 2         bin     bernoulli          1
+# 3         cat    categorical          3
+
+# The decoder will therefore output 6 total columns (2+1+3)
+}
+
+}
+\seealso{
+\code{\link[=feat_reorder]{feat_reorder()}}, \code{\link[=set_feat_dist]{set_feat_dist()}}
 }

@@ -40,7 +40,7 @@ lossbasedondist = function(input, feat_dist, target,weighted=0, recon_weights){ 
       y_true= tf$slice(target, begin=list(0L,as.integer(index_type-1)), size=list(tf$shape(input)[1], 1L))
 
       ll = -(y_true*tf$math$log(prob)+(1-y_true)*tf$math$log(1-prob))
-      #This is the typical negative log likelihood of the Bernoulli distribution! We have the target probability and the predicted probability , sum is inherntly handled by how tensors work
+      #This is the typical negative log likelihood of the Bernoulli distribution! We have the target probability and the predicted probability , sum is inherently handled by how tensors work
       #ll based on logist ont probs
 
       bin_loss_LL[[index_type]]= tf$reduce_mean(ll)
