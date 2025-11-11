@@ -67,7 +67,7 @@
 #'   [Encoder_weights()], [encoder_latent()], [Decoder_weights()], [Latent_sample()]
 #' @export
 
-VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, pi_dec=1, latent_dim, epoch, beta,kl_warm=FALSE,kl_cyclical = FALSE, n_cycles, ratio, beta_epoch=15, temperature, temp_warm = FALSE,temp_epoch,batchsize, wait, min_delta=1e-3, lr,max_std=10.0,min_val,weighted=0, recon_weights, seperate = 0,prior="single_gaussian",K =3,learnable_mog=FALSE,mog_means=NULL, mog_log_vars=NULL, mog_weights=NULL){
+VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, pi_dec=1, latent_dim, epoch, beta,kl_warm=FALSE,kl_cyclical = FALSE, n_cycles, ratio, beta_epoch=15, temperature, temp_warm = FALSE,temp_epoch,batchsize, wait, min_delta=1e-3, lr,max_std=10.0,min_val=1e-3,weighted=0, recon_weights, seperate = 0,prior="single_gaussian",K =3,learnable_mog=FALSE,mog_means=NULL, mog_log_vars=NULL, mog_weights=NULL){
 
   #Helpful errors for users
   feat_dist <- get_feat_dist()
@@ -114,7 +114,7 @@ VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, p
   run_vae = model_VAE(data=data, encoder_info=encoder_info, decoder_info=decoder_info,Lip_en=Lip_en, pi_enc=pi_enc,lip_dec=lip_dec, pi_dec=pi_dec, latent_dim=latent_dim, feat_dist=feat_dist, lr=lr , beta=beta_used,max_std=max_std, min_val=min_val,temperature=temp_used,weighted=weighted, recon_weights=recon_weights, seperate=seperate,prior=prior,K =K,learnable_mog=learnable_mog,mog_means=mog_means, mog_log_vars=mog_log_vars, mog_weights=mog_weights)
 
   #Tracking loss as we go
-  loss_history <<-list()
+  loss_history <-list()
   loss_tracked = keras::callback_lambda(on_epoch_end = function(epoch,logs){
     print(paste("Epoch", epoch+1, "Loss:", logs$loss, "Recon",logs$recon_loss, "KL_loss",logs$kl_loss  ))
     loss_history[[epoch+1]] <<- logs$loss
