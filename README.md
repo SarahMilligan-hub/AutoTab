@@ -39,25 +39,45 @@ library(AutoTab)
 
 ## Example
 
-Below is a basic example of running a VAE training iteration.
+Below is a basic example of running a VAE training iteration. The
+example is not a VAE that has been yuned. It is merely an example to
+show how each function works. The user will execute hyperparameter
+tuning of their VEA and input dataset using the AutoTab package.
+Hyperparametrs (the options within the AutoTab package) are not a one
+size fits all scenario.
 
 ``` r
+#Before executing the example Initiate your Conda / Reticulate Environment 
+
 library(AutoTab)
-
-#The data used in this example is simulated data that contains 1 contiuous, 1 binary, and one categorical variable. 
-set.seed(123)
-cont <- rnorm(100, mean = 50, sd = 10)
-bin <- rbinom(100, 1, 0.4)
-cat <- sample(c("A", "B", "C"), size = 100, replace = TRUE)
-data_final = data.frame(  continuous = cont,  binary = bin,  category = factor(cat))
-
-#Before using AutoTab, like in many machine learning contexts, the data must be pre-processed. The recommended pre processing for continuous variables in AutoTab is min-max scaling. 
+library(dplyr)
+library(keras)
 library(caret)
-encoded_data = dummyVars(~ category, data = data_final)
+
+#Testing my example in the readme documentation
+set.seed(123)
+age        <- rnorm(100, mean = 45, sd = 12)
+income     <- rnorm(100, mean = 60000, sd = 15000)
+bmi        <- rnorm(100, mean = 25, sd = 4)
+smoker     <- rbinom(100, 1, 0.25)
+exercise   <- rbinom(100, 1, 0.6)
+diabetic   <- rbinom(100, 1, 0.15)
+education  <- sample(c("HighSchool", "College", "Graduate"), 100, replace = TRUE, prob = c(0.4, 0.4, 0.2))
+marital    <- sample(c("Single", "Married", "Divorced"), 100, replace = TRUE)
+occupation <- sample(c("Clerical", "Technical", "Professional", "Other"), 100, replace = TRUE)
+data_final <- data.frame(
+  age, income, bmi,
+  smoker, exercise, diabetic,
+  education, marital, occupation
+)
+
+encoded_data = dummyVars(~ education + marital +occupation, data = data_final)
 one_hot_coded = as.data.frame(predict(encoded_data, newdata = data_final))
-Continuous_MinMaxScaled = as.data.frame(lapply(cont, min_max_scale)) #min_max_scale is a function in AutoTab
+data_cont = subset(data_final, select = c(age, income,bmi ))
+Continuous_MinMaxScaled = as.data.frame(lapply(data_cont, min_max_scale)) #min_max_scale is a function in AutoTab
+data_bin = subset(data_final, select = c(smoker, exercise, diabetic ))
 #Bind all data together 
-data = cbind(Continuous_MinMaxScaled, bin, one_hot_coded)
+data = cbind(Continuous_MinMaxScaled, data_bin, one_hot_coded)
 
 # Step 1: Extract and set feature distributions
 feat_dist = feat_reorder(extracting_distribution(data_final),data)
@@ -67,77 +87,77 @@ set_feat_dist(feat_dist)
 # Step 2: Define encoder and decoder architectures
 
 encoder_info <- list(
-list("dense", 100, "relu"),
-list("dense", 80, "relu")
+  list("dense", 25, "relu"),
+  list("dense", 50, "relu")
 )
 
 decoder_info <- list(
-list("dense", 80, "relu"),
-list("dense", 100, "relu")
+  list("dense", 50, "relu"),
+  list("dense", 25, "relu")
 )
 
-# Step 3: Train the VAE
-\dontrun{
+reset_seeds(1234)
 training <- VAE_train(
-data = data,
-encoder_info = encoder_info,
-decoder_info = decoder_info,
-Lip_en = 0,      # spectral normalization off
-pi_enc = 0,
-lip_dec = 0,
-pi_dec = 0,
-latent_dim = 5,
-epoch = 100,
-beta = 0.01,     # β-VAE regularization weight
-kl_warm = TRUE,
-beta_epoch = 20, # warm-up epochs
-temperature = 0.5,
-batchsize = 64,
-wait = 20,
-lr = 1e-3
+  data = data,
+  encoder_info = encoder_info,
+  decoder_info = decoder_info,
+  Lip_en = 0,      # spectral normalization off
+  pi_enc = 0,
+  lip_dec = 0,
+  pi_dec = 0,
+  latent_dim = 5,
+  epoch = 200,
+  beta = 0.01,     # β-VAE regularization weight
+  kl_warm = TRUE,
+  beta_epoch = 20, # warm-up epochs
+  temperature = 0.5,
+  batchsize = 16,
+  wait = 20,
+  lr = 0.001, 
 )
 
 # Step 4: Extract encoder and decoder for sampling
 
 weights_encoder <- Encoder_weights(
-encoder_layers = 2,
-trained_model = training$trained_model,
-lip_enc = 0,
-pi_enc = 0,
-BNenc_layers = 0,
-learn_BN = 0
+  encoder_layers = 2,
+  trained_model = training$trained_model,
+  lip_enc = 0,
+  pi_enc = 0,
+  BNenc_layers = 0,
+  learn_BN = 0
 )
 
 latent_encoder <- encoder_latent(
-encoder_input = data,
-encoder_info = encoder_info,
-latent_dim = 5,
-Lip_en = 0
+  encoder_input = data,
+  encoder_info = encoder_info,
+  latent_dim = 5,
+  Lip_en = 0,
+  power_iterations=0
 )
 
 latent_encoder %>% keras::set_weights(weights_encoder)
 input_data <- as.matrix(data)
-latent_space <- keras::predict(latent_encoder, as.matrix(input_data))
+latent_space <- predict(latent_encoder, as.matrix(input_data))
 
 # Rebuild and apply decoder
 
 weights_decoder <- Decoder_weights(
-encoder_layers = 2,
-trained_model = training$trained_model,
-lip_enc = 0,
-pi_enc = 0,
-prior_learn = "fixed",
-BNenc_layers = 0,
-learn_BN = 0
+  encoder_layers = 2,
+  trained_model = training$trained_model,
+  lip_enc = 0,
+  pi_enc = 0,
+  prior_learn = "fixed",
+  BNenc_layers = 0,
+  learn_BN = 0
 )
 
 decoder <- decoder_model(
-decoder_input = NULL,
-decoder_info = decoder_info,
-latent_dim = 5,
-feat_dist = feat_dist,
-lip_dec = 0,
-pi_dec = 0
+  decoder_input = NULL,
+  decoder_info = decoder_info,
+  latent_dim = 5,
+  feat_dist = feat_dist,
+  lip_dec = 0,
+  pi_dec = 0
 )
 
 decoder %>% keras::set_weights(weights_decoder)
@@ -148,7 +168,7 @@ z_mean <- latent_space[[1]]
 z_log_var <- latent_space[[2]]
 sample_latent <- Latent_sample(z_mean, z_log_var)
 
-decoder_sample <- keras::predict(decoder, as.matrix(sample_latent))
+decoder_sample <- predict(decoder, as.matrix(sample_latent))
 decoder_sample <- as.data.frame(decoder_sample)
 }
 ```
