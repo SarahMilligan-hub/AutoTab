@@ -23,8 +23,6 @@ comparable scales to binary and categorical features.
 \itemize{
 \item The transformation is \strong{performed column-wise} when applied
 to data frames.
-\item If \code{max(x) == min(x)}, all values will be set to 0 to
-avoid division by zero.
 }
 }
 \examples{

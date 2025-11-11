@@ -18,8 +18,6 @@ utils::globalVariables(c("%>%", "loss_history"))
 #' @details
 #' - The transformation is **performed column-wise** when applied
 #'   to data frames.
-#' - If \code{max(x) == min(x)}, all values will be set to 0 to
-#'   avoid division by zero.
 #'
 #' @examples
 #' \dontrun{
@@ -33,8 +31,6 @@ utils::globalVariables(c("%>%", "loss_history"))
 #'
 #' @seealso [extracting_distribution()], [set_feat_dist()], [VAE_train()]
 #' @export
-min_max_scale <- function(x) {
-  rng <- range(x, na.rm = TRUE)
-  if (diff(rng) == 0) return(rep(0, length(x)))
-  (x - rng[1]) / (rng[2] - rng[1])
+min_max_scale = function(x) {
+  (x - min(x)) / (max(x) - min(x))
 }
