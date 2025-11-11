@@ -1,0 +1,17 @@
+Package: AutoTab
+Title: Variational Autoencoder for Heterogenous Tabular Datasets
+Version: 0.0.0.9000
+Authors@R: 
+    person("Sarah", "Milligan", , "slm1999@bu.edu", role = c("aut", "cre"))
+Description: This package utilizes the keras and tensorflow backends to build and train a VAE for tabular heterogenous data. This package can be utilized for datasets with mixed data (continuous, binary, and categorical). The options in this package are meant to be flexible and broad. Some of the options and include, but are not limited to, beta annealing (including cyclical annealing), isotopic or mixture of Guassian prior, and a flexible encoder decoder structure.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: 
+    dplyr,
+    keras,
+    R6,
+    reticulate,
+    tensorflow
+SystemRequirements: Python (>= 3.8), TensorFlow (2.10), tensorflow-addons
