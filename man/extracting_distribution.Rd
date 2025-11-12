@@ -28,6 +28,8 @@ A variable is classified as:
 \item \strong{gaussian} otherwise (e.g., numeric with >2 distinct values)
 }
 
+AutoTab is not built to handle missing data. A message will prompt the user if the data has NA values.
+
 In AutoTab, the decoder outputs \strong{distribution-specific parameters} for each variable,
 not reconstructed values directly. Therefore:
 \itemize{

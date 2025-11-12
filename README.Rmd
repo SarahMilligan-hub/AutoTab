@@ -40,7 +40,9 @@ library(AutoTab)
 
 ## Example
 
-Below is a basic example of running a VAE training iteration. The example is not a VAE that has been yuned. It is merely an example to show how each function works. The user will execute hyperparameter tuning of their VEA and input dataset using the AutoTab package. Hyperparametrs (the options within the AutoTab package) are not a one size fits all scenario.
+Below is a basic example of running a VAE training iteration. The example is not a VAE that has been tuned. It is merely an example to show how each function works. The user will execute hyperparameter tuning of their VEA and input dataset using the AutoTab package. Hyperparametrs (the options within the AutoTab package) are not a one size fits all scenario.
+
+For an example of using a Mixture of Gaussian Prior run ?mog_prior
 
 ```{r AutoTab_example , eval = FALSE}
 #Before executing the example Initiate your Conda / Reticulate Environment 

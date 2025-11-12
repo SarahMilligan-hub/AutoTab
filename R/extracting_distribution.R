@@ -13,6 +13,8 @@
 #' - **categorical** if it is a character/factor with more than 2 unique values
 #' - **gaussian** otherwise (e.g., numeric with >2 distinct values)
 #'
+#' AutoTab is not built to handle missing data. A message will prompt the user if the data has NA values.
+#'
 #' @details
 #' In AutoTab, the decoder outputs **distribution-specific parameters** for each variable,
 #' not reconstructed values directly. Therefore:
@@ -63,6 +65,7 @@
 #'
 #' @seealso [feat_reorder()], [set_feat_dist()]
 #' @export
+
 extracting_distribution = function(data){
   # Create a data set that the following information will fill in
   feat_dist = data.frame(
@@ -72,6 +75,17 @@ extracting_distribution = function(data){
   for (i in 1:ncol(data)) {
     variable = data[[i]] #This will loop through each column
     name = colnames(data)[i]
+
+    if (any(is.na(variable))) {
+      feat_dist$distribution[i] <- "Missing data - cannot use column"   # 🔧 replaced em dash
+      feat_dist$num_params[i] <- 0
+      message(
+        "STOP: The dataset has one or more columns with missing values. ",
+        "Please use imputation or other methods to prep data for AutoTab."
+      )
+      next
+    }
+
     if(is.numeric(variable) && length(unique(variable))>2){ #A numeric column with more than 2 distinct values
       feat_dist$distribution[i] = "gaussian"
       feat_dist$num_params[i] = 2     } #mean and SD
@@ -82,7 +96,6 @@ extracting_distribution = function(data){
       feat_dist$distribution[i] = "categorical"
       feat_dist$num_params[i] = length(unique(variable))  }}
   return(feat_dist)}
-
 
 #Make sure order matches the data
 #' Reorder `feat_dist` rows to match preprocessed data

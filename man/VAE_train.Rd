@@ -28,7 +28,7 @@ VAE_train(
   min_delta = 0.001,
   lr,
   max_std = 10,
-  min_val,
+  min_val = 0.001,
   weighted = 0,
   recon_weights,
   seperate = 0,
