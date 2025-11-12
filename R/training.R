@@ -83,9 +83,9 @@ VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, p
     stop("kl_cyclical = TRUE requires kl_warm = TRUE.")
   }
   output_count = sum(feat_dist$num_params)
-  lastencoder = encoder_info[[length(encoder_info)]]
-  lastencoder_count = lastencoder[[2]]
-  if (output_count > lastencoder_count) {
+  lastdencoder = decoder_info[[length(decoder_info)]]
+  lastdencoder_count = lastdencoder[[2]]
+  if (output_count > lastdencoder_count) {
     message ("The node count of the last layer must be >= number of output layers. To get the number of ouput layers look at the sum of num_params in feat_dist.")
   }
 
