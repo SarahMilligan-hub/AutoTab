@@ -109,13 +109,13 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #' decoder weights and generate new samples by sampling the latent space.
 #'
 #' @details
-#' The final output layer of a AutoTab decoder slices outputs by feature distribution in `feat_dist`:
+#' The final output layer of an AutoTab decoder slices outputs by feature distribution in `feat_dist`:
 #' Gaussian heads output mean/SD (with `min_val`/`max_std` constraints),
 #' Bernoulli heads output logits passed through sigmoid to extract probabilities,
 #' and Categorical heads use Gumbel–Softmax with the given `temperature`.
 #'
-#' If `lip_dec = 1`, dense hidden layers are wrapped with TensorFlow Addons
-#' spectral normalization using `pi_dec` power iterations.
+#' If `lip_dec = 1`, dense hidden layers are wrapped with
+#' #' spectral normalization using `pi_dec` power iterations.
 #'
 #' @param decoder_input Ignored; pass `NULL`. No input is needed when building the compitational graph.
 #' @param decoder_info List defining the decoder architecture, e.g.
@@ -153,14 +153,27 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #'   temperature   = 0.5
 #' )
 #'
-#' # After training, load weights and sample:
-#' # w_dec <- Decoder_weights(encoder_layers = 2, trained_model = training$trained_model,
-#' #                          lip_enc = 0, pi_enc = 0, prior_learn = "fixed",
-#' #                          BNenc_layers = 0, learn_BN = 0)
-#' # dec %>% keras::set_weights(w_dec)
-#' # Z <- matrix(rnorm(10 * 5), nrow = 10)
-#' #A mock sample from the latent space. In true execution use Latent_sample()
-#' # VAE_sample <- keras::predict(dec, Z)
+#'# Rebuild and apply decoder
+#'weights_decoder <- Decoder_weights(
+#'  encoder_layers = 2,
+#'    trained_model = training$trained_model,
+#'      lip_enc = 0,
+#'        pi_enc = 0,
+#'        prior_learn = "fixed",
+#'        BNenc_layers = 0,
+#'        learn_BN = 0
+#'        )
+#'
+#'decoder <- decoder_model(
+#'decoder_input = NULL,
+#'decoder_info = decoder_info,
+#'latent_dim = 5,
+#'feat_dist = feat_dist,
+#'lip_dec = 0,
+#'pi_dec = 0
+#')
+#'
+#'decoder %>% keras::set_weights(weights_decoder)
 #' }
 #'
 #' @seealso [VAE_train()], [Decoder_weights()], [encoder_latent()], [Latent_sample()], [extracting_distribution()]

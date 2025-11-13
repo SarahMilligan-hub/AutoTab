@@ -114,48 +114,48 @@
 #'
 #'    #Step 3: Run AutoTab
 #'
-#'       reset_seeds(1234)
-#'       training <- VAE_train(
+#' reset_seeds(1234)
+#' training <- VAE_train(
 #'        data = data,
-#'         encoder_info = encoder_info,
-#'          decoder_info = decoder_info,
-#'          Lip_en = 0,      # spectral normalization off
-#'          pi_enc = 0,
-#'          lip_dec = 0,
-#'          pi_dec = 0,
-#'          latent_dim = 5,
-#'          epoch = 20,
-#'          beta = 0.01,     # β-VAE regularization weight
-#'          kl_warm = TRUE,
-#'          beta_epoch = 20, # warm-up epochs
-#'          temperature = 0.5,
-#'          batchsize = 16,
-#'          wait = 20,
-#'          lr = 0.001,
-#'          K=3,
-#'          mog_means = mog_means,
-#'          mog_log_vars = mog_log_vars,
-#'           mog_weights = mog_weights,
-#'            prior = "mixture_gaussian",
-#'            learnable_mog = FALSE
+#'        encoder_info = encoder_info,
+#'        decoder_info = decoder_info,
+#'        Lip_en = 0,      # spectral normalization off
+#'        pi_enc = 0,
+#'        lip_dec = 0,
+#'        pi_dec = 0,
+#'        latent_dim = 5,
+#'        epoch = 20,
+#'        beta = 0.01,     # β-VAE regularization weight
+#'        kl_warm = TRUE,
+#'        beta_epoch = 20, # warm-up epochs
+#'        temperature = 0.5,
+#'        batchsize = 16,
+#'        wait = 20,
+#'        lr = 0.001,
+#'        K=3,
+#'        mog_means = mog_means,
+#'        mog_log_vars = mog_log_vars,
+#'        mog_weights = mog_weights,
+#'        prior = "mixture_gaussian",
+#'        learnable_mog = FALSE
 #'            )
 #'
 #' # Step 4: Extract encoder and decoder for sampling
-#'            weights_encoder <- Encoder_weights(
-#'              encoder_layers = 2,
-#'               trained_model = training$trained_model,
-#'                lip_enc = 0,
-#'                 pi_enc = 0,
-#'                  BNenc_layers = 0,
-#'                  learn_BN = 0
+#'  weights_encoder <- Encoder_weights(
+#'        encoder_layers = 2,
+#'         trained_model = training$trained_model,
+#'         lip_enc = 0,
+#'         pi_enc = 0,
+#'         BNenc_layers = 0,
+#'         learn_BN = 0
 #'                  )
-#'                  latent_encoder <- encoder_latent(
-#'                    encoder_input = data,
-#'                      encoder_info = encoder_info,
-#'                        latent_dim = 5,
-#'                          Lip_en = 0,
-#'                           power_iterations=0
-#'                           )
+#'        latent_encoder <- encoder_latent(
+#'          encoder_input = data,
+#'          encoder_info = encoder_info,
+#'          latent_dim = 5,
+#'          Lip_en = 0,
+#'         power_iterations=0
+#'                   )
 #' latent_encoder %>% keras::set_weights(weights_encoder)
 #' input_data <- as.matrix(data)
 #' latent_space <- predict(latent_encoder, as.matrix(input_data))
@@ -183,18 +183,18 @@
 #'
 #'    decoder %>% keras::set_weights(weights_decoder)
 #'
-#'    # Sample from latent space
-#'    z_mean <- latent_space[[1]]
-#'    z_log_var <- latent_space[[2]]
-#'    sample_latent <- Latent_sample(z_mean, z_log_var)
-#'    decoder_sample <- predict(decoder, as.matrix(sample_latent))
-#'    decoder_sample <- as.data.frame(decoder_sample)
+#'  # Sample from latent space
+#'  z_mean <- latent_space[[1]]
+#'  z_log_var <- latent_space[[2]]
+#'  sample_latent <- Latent_sample(z_mean, z_log_var)
+#'  decoder_sample <- predict(decoder, as.matrix(sample_latent))
+#'  decoder_sample <- as.data.frame(decoder_sample)
 #'
 #' }
 #'
 #' \dontrun{
 #'  #Example of a Mixture of Gaussian prior with learnable_mog = TRUE
-#'   with preset means, variances, and weights:
+#'  #with preset means, variances, and weights:
 #'
 #'    # Step 2: Define encoder / decoder architectures with MOG parameters
 #'
@@ -213,47 +213,47 @@
 #'
 #' # Step 3: Run AutoTab
 #'
-#'       reset_seeds(1234)
-#'       training <- VAE_train(
-#'        data = data,
-#'         encoder_info = encoder_info,
-#'          decoder_info = decoder_info,
-#'          Lip_en = 0,      # spectral normalization off
-#'          pi_enc = 0,
-#'          lip_dec = 0,
-#'          pi_dec = 0,
-#'          latent_dim = 5,
-#'          epoch = 20,
-#'          beta = 0.01,     # β-VAE regularization weight
-#'          kl_warm = TRUE,
-#'          beta_epoch = 20, # warm-up epochs
-#'          temperature = 0.5,
-#'          batchsize = 16,
-#'          wait = 20,
-#'          lr = 0.001,
-#'          K=3,
-#'          mog_means = mog_means,
-#'          mog_log_vars = mog_log_vars,
-#'           mog_weights = mog_weights,
-#'            prior = "mixture_gaussian",
-#'            learnable_mog = TRUE
+#'  reset_seeds(1234)
+#'  training <- VAE_train(
+#'      data = data,
+#'      encoder_info = encoder_info,
+#'      decoder_info = decoder_info,
+#'      Lip_en = 0,      # spectral normalization off
+#'      pi_enc = 0,
+#'      lip_dec = 0,
+#'      pi_dec = 0,
+#'      latent_dim = 5,
+#'      epoch = 20,
+#'      beta = 0.01,     # β-VAE regularization weight
+#'      kl_warm = TRUE,
+#'      beta_epoch = 20, # warm-up epochs
+#'      temperature = 0.5,
+#'      batchsize = 16,
+#'      wait = 20,
+#'      lr = 0.001,
+#'      K=3,
+#'      mog_means = mog_means,
+#'      mog_log_vars = mog_log_vars,
+#'      mog_weights = mog_weights,
+#'      prior = "mixture_gaussian",
+#'      learnable_mog = TRUE
 #'            )
 #' # Step 4: Extract encoder and decoder for sampling
-#'            weights_encoder <- Encoder_weights(
-#'              encoder_layers = 2,
-#'               trained_model = training$trained_model,
-#'                lip_enc = 0,
-#'                 pi_enc = 0,
-#'                  BNenc_layers = 0,
-#'                  learn_BN = 0
+#' weights_encoder <- Encoder_weights(
+#'        encoder_layers = 2,
+#'        trained_model = training$trained_model,
+#'        lip_enc = 0,
+#'        pi_enc = 0,
+#'        BNenc_layers = 0,
+#'        learn_BN = 0
 #'                  )
-#'                  latent_encoder <- encoder_latent(
-#'                    encoder_input = data,
-#'                      encoder_info = encoder_info,
-#'                        latent_dim = 5,
-#'                          Lip_en = 0,
-#'                           power_iterations=0
-#'                           )
+#'  latent_encoder <- encoder_latent(
+#'        encoder_input = data,
+#'        encoder_info = encoder_info,
+#'        latent_dim = 5,
+#'        Lip_en = 0,
+#'       power_iterations=0
+#'                 )
 #' latent_encoder %>% keras::set_weights(weights_encoder)
 #' input_data <- as.matrix(data)
 #' latent_space <- predict(latent_encoder, as.matrix(input_data))
@@ -280,19 +280,19 @@
 #'
 #'    decoder %>% keras::set_weights(weights_decoder)
 #'
-#'    # Sample from latent space
-#'    z_mean <- latent_space[[1]]
-#'    z_log_var <- latent_space[[2]]
-#'    sample_latent <- Latent_sample(z_mean, z_log_var)
-#'    decoder_sample <- predict(decoder, as.matrix(sample_latent))
-#'    decoder_sample <- as.data.frame(decoder_sample)
+#' # Sample from latent space
+#' z_mean <- latent_space[[1]]
+#' z_log_var <- latent_space[[2]]
+#' sample_latent <- Latent_sample(z_mean, z_log_var)
+#' decoder_sample <- predict(decoder, as.matrix(sample_latent))
+#' decoder_sample <- as.data.frame(decoder_sample)
 #'
 #' }
 #'
 #'
 #' \dontrun{
 #' #Example of a Mixture of Gaussian prior with learnable_mog = TRUE
-#' without preset means, variances, and weights:
+#' #without preset means, variances, and weights:
 #'
 #'    # Step 2: Define encoder / decoder architectures with MOG parameters
 #'
@@ -307,48 +307,48 @@
 #'
 #'  # Step 3: Run AutoTab
 #'
-#'       reset_seeds(1234)
-#'       training <- VAE_train(
-#'        data = data,
-#'         encoder_info = encoder_info,
-#'          decoder_info = decoder_info,
-#'          Lip_en = 0,      # spectral normalization off
-#'          pi_enc = 0,
-#'          lip_dec = 0,
-#'          pi_dec = 0,
-#'          latent_dim = 5,
-#'          epoch = 20,
-#'          beta = 0.01,     # β-VAE regularization weight
-#'          kl_warm = TRUE,
-#'          beta_epoch = 20, # warm-up epochs
-#'          temperature = 0.5,
-#'          batchsize = 16,
-#'          wait = 20,
-#'          lr = 0.001,
-#'          K=3,
-#'          mog_means = NULL,
-#'          mog_log_vars = NULL,
-#'           mog_weights = NULL,
-#'            prior = "mixture_gaussian",
-#'            learnable_mog = TRUE
+#' reset_seeds(1234)
+#' training <- VAE_train(
+#'      data = data,
+#'      encoder_info = encoder_info,
+#'      decoder_info = decoder_info,
+#'      Lip_en = 0,      # spectral normalization off
+#'      pi_enc = 0,
+#'      lip_dec = 0,
+#'      pi_dec = 0,
+#'      latent_dim = 5,
+#'      epoch = 20,
+#'      beta = 0.01,     # β-VAE regularization weight
+#'      kl_warm = TRUE,
+#'      beta_epoch = 20, # warm-up epochs
+#'      temperature = 0.5,
+#'      batchsize = 16,
+#'       wait = 20,
+#'      lr = 0.001,
+#'      K=3,
+#'      mog_means = NULL,
+#'      mog_log_vars = NULL,
+#'      mog_weights = NULL,
+#'      prior = "mixture_gaussian",
+#'      learnable_mog = TRUE
 #'            )
 #'
 #' # Step 4: Extract encoder and decoder for sampling
-#'            weights_encoder <- Encoder_weights(
-#'              encoder_layers = 2,
-#'               trained_model = training$trained_model,
-#'                lip_enc = 0,
-#'                 pi_enc = 0,
-#'                  BNenc_layers = 0,
-#'                  learn_BN = 0
+#' weights_encoder <- Encoder_weights(
+#'      encoder_layers = 2,
+#'      trained_model = training$trained_model,
+#'      lip_enc = 0,
+#'      pi_enc = 0,
+#'      BNenc_layers = 0,
+#'      learn_BN = 0
 #'                  )
-#'                  latent_encoder <- encoder_latent(
-#'                    encoder_input = data,
-#'                      encoder_info = encoder_info,
-#'                        latent_dim = 5,
-#'                          Lip_en = 0,
-#'                           power_iterations=0
-#'                           )
+#' latent_encoder <- encoder_latent(
+#'       encoder_input = data,
+#'        encoder_info = encoder_info,
+#'        latent_dim = 5,
+#'        Lip_en = 0,
+#'        power_iterations=0
+#'                  )
 #' latent_encoder %>% keras::set_weights(weights_encoder)
 #' input_data <- as.matrix(data)
 #' latent_space <- predict(latent_encoder, as.matrix(input_data))
@@ -376,12 +376,12 @@
 #'
 #'    decoder %>% keras::set_weights(weights_decoder)
 #'
-#'    # Sample from latent space
-#'    z_mean <- latent_space[[1]]
-#'    z_log_var <- latent_space[[2]]
-#'    sample_latent <- Latent_sample(z_mean, z_log_var)
-#'    decoder_sample <- predict(decoder, as.matrix(sample_latent))
-#'    decoder_sample <- as.data.frame(decoder_sample)
+#' # Sample from latent space
+#'  z_mean <- latent_space[[1]]
+#'  z_log_var <- latent_space[[2]]
+#'  sample_latent <- Latent_sample(z_mean, z_log_var)
+#'  decoder_sample <- predict(decoder, as.matrix(sample_latent))
+#'  decoder_sample <- as.data.frame(decoder_sample)
 #' }
 #'
 #' @seealso [VAE_train()]

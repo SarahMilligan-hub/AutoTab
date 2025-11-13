@@ -40,9 +40,16 @@ library(AutoTab)
 
 ## Example
 
-Below is a basic example of running a VAE training iteration. The example is not a VAE that has been tuned. It is merely an example to show how each function works. The user will execute hyperparameter tuning of their VEA and input dataset using the AutoTab package. Hyperparametrs (the options within the AutoTab package) are not a one size fits all scenario.
+Below is a basic example of running a VAE training iteration. The example is not a VAE that has been tuned. It is merely an example to show how each function works. The user will execute hyperparameter tuning of their VAE and input dataset using the AutoTab package. Hyperparameters (the options within the AutoTab package) are not a one size fits all scenario.
 
 For an example of using a Mixture of Gaussian Prior run ?mog_prior
+
+Note: When running AutoTab the user will receive the following warning from tensorflow:
+
+WARNING:tensorflow:The following Variables were used in a Lambda layer's call (tf.math.multiply_3), but are not present in its tracked objects:   <tf.Variable 'beta:0' shape=() dtype=float32>. This is a strong indication that the Lambda layer should be rewritten as a subclassed Layer.
+
+This is merely a warning and should not effect the computation of AutoTab. This occurs because tensorflow does not see beta, (the weight on the regularization part of the ELBO) until after the first iteration of training and the first computation of the loss is initiated. Therefore it is not an internally tracked object. However, it  is being tracked and updated outside of the model graph which can be seen in the KL loss plots and in the training printout in the R console.
+
 
 ```{r AutoTab_example , eval = FALSE}
 #Before executing the example Initiate your Conda / Reticulate Environment 
@@ -175,7 +182,5 @@ decoder_sample <- as.data.frame(decoder_sample)
 # Citing AutoTab
 If you use AutoTab in your research, please cite:
 
-Milligan, S. (2025). AutoTab: Variational Autoencoder for Heterogeneous Tabular Data. Boston University, Department of Biostatistics.
+Milligan, S. (2025). AutoTab: Variational Autoencoder for Heterogeneous Tabular Data. GitHub. https://github.com/SarahMilligan-hub/AutoTab
 
-#License
-MIT © 2025 Sarah Milligan

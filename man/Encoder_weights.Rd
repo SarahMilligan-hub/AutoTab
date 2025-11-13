@@ -37,7 +37,6 @@ layers and whether BN/SN were used.
 }
 \details{
 \itemize{
-\item \strong{Dropout layers have no trainable weights} and do not affect the index math.
 \item The index arithmetic assumes AutoTab's standard Dense/BN/SN layout. If you
 substantially change layer ordering or introduce new per-layer parameters,
 re-check the split index.
@@ -56,7 +55,7 @@ encoder_info <- list(
 # assume: training <- VAE_train(...)
 weights_encoder <- Encoder_weights(
   encoder_layers = 2,
-  trained_model  = training$trained_model,
+  trained_model  = training$trained_model, #where training = VAE_train(...)
   lip_enc        = 0,
   pi_enc         = 0,
   BNenc_layers   = 0,

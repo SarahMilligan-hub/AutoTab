@@ -43,7 +43,7 @@
 #' each distributional head.
 #'
 #' @param data Data frame of the **original (preprocessed)** variables.
-#' @return A data frame with columns `column_name`, `distribution`, and `num_params`.
+#' @return A data frame with columns `column_name`, `distribution`, and `num_params`. Note: refer to [feat_reorder()].
 #'
 #' @examples
 #' \dontrun{

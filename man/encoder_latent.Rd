@@ -29,7 +29,7 @@ A Keras model whose outputs are \code{list(z_mean, z_log_var)}.
 \description{
 Constructs the encoder computation graph (matching your original \code{encoder_info})
 so that weights extracted by \code{\link[=Encoder_weights]{Encoder_weights()}} can be applied and the encoder
-re-used to produce \code{z_mean} and \code{z_log_var}.
+to produce \code{z_mean} and \code{z_log_var}.
 }
 \details{
 \itemize{
@@ -62,7 +62,6 @@ latent_encoder <- encoder_latent(
   power_iterations = 0
 )
 latent_encoder \%>\% keras::set_weights(weights_encoder)
-latent_space <- keras::predict(latent_encoder, as.matrix(data))
 }
 }
 \seealso{

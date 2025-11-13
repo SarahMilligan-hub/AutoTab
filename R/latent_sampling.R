@@ -10,7 +10,7 @@
 #' where \eqn{\epsilon \sim \mathcal{N}(0, I)}.
 #'
 #' The function is used internally within `VAE_train()` but can also be
-#' called directly to sample latent points for downstream decoding.
+#' called directly to sample latent points and decode synthetic output.
 #' Typically, `z_mean` and `z_log_var` are obtained via [`encoder_latent()`]
 #' and the corresponding weights extracted using [`Encoder_weights()`].
 #'

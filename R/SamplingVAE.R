@@ -18,7 +18,6 @@
 #' @return A `list()` of encoder weight tensors in order, suitable for `set_weights()`.
 #'
 #' @details
-#' - **Dropout layers have no trainable weights** and do not affect the index math.
 #' - The index arithmetic assumes AutoTab's standard Dense/BN/SN layout. If you
 #'   substantially change layer ordering or introduce new per-layer parameters,
 #'   re-check the split index.
@@ -38,7 +37,7 @@
 #' # assume: training <- VAE_train(...)
 #' weights_encoder <- Encoder_weights(
 #'   encoder_layers = 2,
-#'   trained_model  = training$trained_model,
+#'   trained_model  = training$trained_model, #where training = VAE_train(...)
 #'   lip_enc        = 0,
 #'   pi_enc         = 0,
 #'   BNenc_layers   = 0,
@@ -69,7 +68,7 @@ Encoder_weights = function(encoder_layers, trained_model,lip_enc, pi_enc, BNenc_
 #'
 #' Constructs the encoder computation graph (matching your original `encoder_info`)
 #' so that weights extracted by [Encoder_weights()] can be applied and the encoder
-#' re-used to produce `z_mean` and `z_log_var`.
+#' to produce `z_mean` and `z_log_var`.
 #'
 #' @param encoder_input Data frame or matrix of the **preprocessed** variables (used for shape only).
 #' @param encoder_info List defining encoder architecture.
@@ -110,7 +109,6 @@ Encoder_weights = function(encoder_layers, trained_model,lip_enc, pi_enc, BNenc_
 #'   power_iterations = 0
 #' )
 #' latent_encoder %>% keras::set_weights(weights_encoder)
-#' latent_space <- keras::predict(latent_encoder, as.matrix(data))
 #' }
 #' @export
 encoder_latent = function(encoder_input,encoder_info,latent_dim,Lip_en, power_iterations){

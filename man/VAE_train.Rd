@@ -122,11 +122,23 @@ per-feature distributions and parameter counts (see \code{\link[=extracting_dist
 and \code{\link[=feat_reorder]{feat_reorder()}}).
 
 \strong{Metrics exposed during training:} \code{loss}, \code{recon_loss}, \code{kl_loss}, and,
-when \code{seperate = 1}, \code{cont_loss}, \code{bin_loss}, \code{cat_loss}.
+when \code{seperate = 1}, \code{cont_loss}, \code{bin_loss}, \code{cat_loss}, and, \code{beta}, \code{temperature}
+when annealed.
 
 \strong{Early stopping:} monitored on \code{val_recon_loss} with \code{patience = wait}.
 
 \strong{Reproducibility:} set seeds via your own workflow or the helper \code{reset_seeds()}.
+
+\strong{Expected Warning:} When running AutoTab the user will receive the following warning from tensorflow:
+"WARNING:tensorflow:The following Variables were used in a Lambda layer's call (tf.math.multiply_3),
+but are not present in its tracked objects:   <tf.Variable 'beta:0' shape=() dtype=float32>.
+This is a strong indication that the Lambda layer should be rewritten as a subclassed Layer."
+
+This is merely a warning and should not effect the computation of AutoTab.
+This occurs because tensorflow does not see beta, (the weight on the regularization part of the ELBO)
+until after the first iteration of training and the first computation of the loss is initiated.
+Therefore it is not an internally tracked object. However, it  is being tracked and updated outside
+of the model graph which can be seen in the KL loss plots and in the training printout in the R console.
 }
 \seealso{
 \code{\link[=set_feat_dist]{set_feat_dist()}}, \code{\link[=extracting_distribution]{extracting_distribution()}}, \code{\link[=feat_reorder]{feat_reorder()}},

@@ -23,7 +23,7 @@ where \eqn{\epsilon \sim \mathcal{N}(0, I)}.
 }
 \details{
 The function is used internally within \code{VAE_train()} but can also be
-called directly to sample latent points for downstream decoding.
+called directly to sample latent points and decode synthetic output.
 Typically, \code{z_mean} and \code{z_log_var} are obtained via \code{\link[=encoder_latent]{encoder_latent()}}
 and the corresponding weights extracted using \code{\link[=Encoder_weights]{Encoder_weights()}}.
 \itemize{
