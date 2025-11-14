@@ -22,11 +22,12 @@ available options.
 
 When loading the package via library(AutoTab), AutoTab will remind you
 to activate your reticulate/conda environment before running any model
-functions. AutoTab requires TensorFlow 2.10.0 within the active Python
-environment.
+functions. AutoTab has been developed and tested with TensorFlow 2.10.0.
+Other versions may work, but compatibility is not guaranteed.
 
 AutoTab was developed under Python 3.10.8 and numpy 1.26.4. If
-compatibility issues arise, recreate your environment with this version.
+compatibility issues arise, we recommend using the tested configuration
+shown above.
 
 ``` r
 # Install from GitHub
@@ -47,23 +48,6 @@ Hyperparameters (the options within the AutoTab package) are not a one
 size fits all scenario.
 
 For an example of using a Mixture of Gaussian Prior run ?mog_prior
-
-Note: When running AutoTab the user will receive the following warning
-from tensorflow:
-
-WARNING:tensorflow:The following Variables were used in a Lambda layer’s
-call (tf.math.multiply_3), but are not present in its tracked objects:
-\<tf.Variable ‘beta:0’ shape=() dtype=float32\>. This is a strong
-indication that the Lambda layer should be rewritten as a subclassed
-Layer.
-
-This is merely a warning and should not effect the computation of
-AutoTab. This occurs because tensorflow does not see beta, (the weight
-on the regularization part of the ELBO) until after the first iteration
-of training and the first computation of the loss is initiated.
-Therefore it is not an internally tracked object. However, it is being
-tracked and updated outside of the model graph which can be seen in the
-KL loss plots and in the training printout in the R console.
 
 ``` r
 #Before executing the example Initiate your Conda / Reticulate Environment 
@@ -126,7 +110,7 @@ training <- VAE_train(
   pi_dec = 0,
   latent_dim = 5,
   epoch = 200,
-  beta = 0.01,     # β-VAE regularization weight
+  beta = 0.01,     # beta-VAE regularization weight
   kl_warm = TRUE,
   beta_epoch = 20, # warm-up epochs
   temperature = 0.5,
@@ -192,9 +176,33 @@ decoder_sample <- as.data.frame(decoder_sample)
 }
 ```
 
+Note: When running AutoTab the user will receive the following warning
+from tensorflow:
+
+WARNING:tensorflow:The following Variables were used in a Lambda layer’s
+call (tf.math.multiply_3), but are not present in its tracked objects:
+\<tf.Variable ‘beta:0’ shape=() dtype=float32\>. This is a strong
+indication that the Lambda layer should be rewritten as a subclassed
+Layer.
+
+This is merely a warning and should not effect the computation of
+AutoTab. This occurs because tensorflow does not see beta, (the weight
+on the regularization part of the ELBO) until after the first iteration
+of training and the first computation of the loss is initiated.
+Therefore it is not an internally tracked object. However, it is being
+tracked and updated outside of the model graph which can be seen in the
+KL loss plots and in the training printout in the R console.
+
 # Citing AutoTab
 
 If you use AutoTab in your research, please cite:
 
-Milligan, S. (2025). AutoTab: Variational Autoencoder for Heterogeneous
-Tabular Data. GitHub. <https://github.com/SarahMilligan-hub/AutoTab>
+Milligan, S. (2025). AutoTab: Variational Autoencoders for Heterogeneous
+Tabular Data. GitHub version 0.1.0. URL:
+<https://github.com/SarahMilligan-hub/AutoTab>
+
+Once the package is on CRAN, please update the citation to:
+
+Milligan, S. (2025). AutoTab: Variational Autoencoders for Heterogeneous
+Tabular Data. R package version 0.1.0.  
+<https://CRAN.R-project.org/package=AutoTab>

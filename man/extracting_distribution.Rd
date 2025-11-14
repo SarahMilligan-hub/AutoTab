@@ -34,7 +34,7 @@ In AutoTab, the decoder outputs \strong{distribution-specific parameters} for ea
 not reconstructed values directly. Therefore:
 \itemize{
 \item \strong{Continuous (Gaussian)} variables output \strong{two parameters} per feature:
-the mean (\code{μ}) and the standard deviation (\code{σ}).
+the mean (\eqn{\mu}) and the standard deviation (\eqn{\sigma}).
 \item \strong{Binary (Bernoulli)} variables output \strong{one parameter}:
 the probability (\code{p}) of observing a 1.
 \item \strong{Categorical} variables output \strong{one parameter per category level}:

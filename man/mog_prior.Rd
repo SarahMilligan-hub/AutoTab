@@ -133,7 +133,7 @@ training <- VAE_train(
        pi_dec = 0,
        latent_dim = 5,
        epoch = 20,
-       beta = 0.01,     # β-VAE regularization weight
+       beta = 0.01,     # beta-VAE regularization weight
        kl_warm = TRUE,
        beta_epoch = 20, # warm-up epochs
        temperature = 0.5,
@@ -232,7 +232,7 @@ lip_enc = 0,
      pi_dec = 0,
      latent_dim = 5,
      epoch = 20,
-     beta = 0.01,     # β-VAE regularization weight
+     beta = 0.01,     # beta-VAE regularization weight
      kl_warm = TRUE,
      beta_epoch = 20, # warm-up epochs
      temperature = 0.5,
@@ -326,7 +326,7 @@ training <- VAE_train(
      pi_dec = 0,
      latent_dim = 5,
      epoch = 20,
-     beta = 0.01,     # β-VAE regularization weight
+     beta = 0.01,     # beta-VAE regularization weight
      kl_warm = TRUE,
      beta_epoch = 20, # warm-up epochs
      temperature = 0.5,

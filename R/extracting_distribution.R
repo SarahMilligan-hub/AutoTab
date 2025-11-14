@@ -20,7 +20,7 @@
 #' not reconstructed values directly. Therefore:
 #'
 #' - **Continuous (Gaussian)** variables output **two parameters** per feature:
-#'   the mean (`μ`) and the standard deviation (`σ`).
+#'   the mean (\eqn{\mu}) and the standard deviation (\eqn{\sigma}).
 #' - **Binary (Bernoulli)** variables output **one parameter**:
 #'   the probability (`p`) of observing a 1.
 #' - **Categorical** variables output **one parameter per category level**:
