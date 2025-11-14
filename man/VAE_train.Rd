@@ -57,17 +57,17 @@ in encoder/decoder.}
 
 \item{epoch}{Integer. Max training epochs.}
 
-\item{beta}{Numeric. β-VAE weight on the KL term in the ELBO.}
+\item{beta}{Numeric. Beta-VAE weight on the KL term in the ELBO.}
 
-\item{kl_warm}{Logical. Enable β-annealing.}
+\item{kl_warm}{Logical. Enable Beta-annealing.}
 
-\item{kl_cyclical}{Logical. Enable \strong{cyclical} β-annealing (requires \code{kl_warm = TRUE}).}
+\item{kl_cyclical}{Logical. Enable \strong{cyclical} Beta-annealing (requires \code{kl_warm = TRUE}).}
 
 \item{n_cycles}{Integer. Number of cycles when \code{kl_cyclical = TRUE}.}
 
-\item{ratio}{Numeric from range 0 to 1. Fraction of each cycle used for warm-up (rise from 0→β).}
+\item{ratio}{Numeric from range 0 to 1. Fraction of each cycle used for warm-up (rise from 0→Beta).}
 
-\item{beta_epoch}{Integer. Warm-up length (epochs) for \strong{linear} β-annealing; when
+\item{beta_epoch}{Integer. Warm-up length (epochs) for \strong{linear} Beta-annealing; when
 \code{kl_cyclical = TRUE}, the cycle length is \code{(beta_epoch / n_cycles)}.}
 
 \item{temperature}{Numeric. Gumbel-softmax temperature (used for categorical heads).}
@@ -113,7 +113,7 @@ A list with:
 }
 \description{
 Runs the full AutoTab training loop (encoder + decoder + latent space),
-with optional β-annealing (linear or cyclical), optional Gumbel-softmax
+with optional Beta-annealing (linear or cyclical), optional Gumbel-softmax
 temperature warming for categorical outputs, and options for the prior.
 }
 \details{

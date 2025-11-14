@@ -5,7 +5,7 @@
 #' Train an AutoTab VAE on mixed-type tabular data
 #'
 #' Runs the full AutoTab training loop (encoder + decoder + latent space),
-#' with optional β-annealing (linear or cyclical), optional Gumbel-softmax
+#' with optional Beta-annealing (linear or cyclical), optional Gumbel-softmax
 #' temperature warming for categorical outputs, and options for the prior.
 #'
 #' **Prerequisite:** call [set_feat_dist()] once before training to register the
@@ -22,12 +22,12 @@
 #' @param pi_enc,pi_dec Integer. Power-iteration counts for spectral normalization.
 #' @param latent_dim Integer. Latent dimensionality.
 #' @param epoch Integer. Max training epochs.
-#' @param beta Numeric. β-VAE weight on the KL term in the ELBO.
-#' @param kl_warm Logical. Enable β-annealing.
-#' @param kl_cyclical Logical. Enable **cyclical** β-annealing (requires `kl_warm = TRUE`).
+#' @param beta Numeric. Beta-VAE weight on the KL term in the ELBO.
+#' @param kl_warm Logical. Enable Beta-annealing.
+#' @param kl_cyclical Logical. Enable **cyclical** Beta-annealing (requires `kl_warm = TRUE`).
 #' @param n_cycles Integer. Number of cycles when `kl_cyclical = TRUE`.
-#' @param ratio Numeric from range 0 to 1. Fraction of each cycle used for warm-up (rise from 0→β).
-#' @param beta_epoch Integer. Warm-up length (epochs) for **linear** β-annealing; when
+#' @param ratio Numeric from range 0 to 1. Fraction of each cycle used for warm-up (rise from 0→Beta).
+#' @param beta_epoch Integer. Warm-up length (epochs) for **linear** Beta-annealing; when
 #'   `kl_cyclical = TRUE`, the cycle length is `(beta_epoch / n_cycles)`.
 #' @param temperature Numeric. Gumbel-softmax temperature (used for categorical heads).
 #' @param temp_warm Logical. Enable temperature warm-up.
