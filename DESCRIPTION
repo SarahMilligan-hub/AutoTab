@@ -1,4 +1,4 @@
-Package: autoTab
+Package: autotab
 Title: Variational Autoencoders for Heterogeneous Tabular Data
 Version: 0.1.1
 Authors@R: 
