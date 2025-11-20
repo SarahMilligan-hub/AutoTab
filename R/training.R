@@ -139,11 +139,11 @@ VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, p
   loss_tracked = keras::callback_lambda(on_epoch_end = function(epoch,logs){
     loss_history[[epoch+1]] <<- logs$loss
     message(paste("Epoch", epoch+1, "Loss:", logs$loss, "Recon",logs$recon_loss, "KL_loss",logs$kl_loss  ))
-    invisible(NULL)
+    return(invisible(NULL))
   })
 
-  if (seperate == 1){callbacks = c(list(EarlyStop),beta_callback_list,temp_callback_list,LossPrinterCallback$new())}
-  else if (seperate == 0) { callbacks = c(list(EarlyStop),beta_callback_list,temp_callback_list)}
+  if (seperate == 1){callbacks = c(list(EarlyStop, loss_tracked),beta_callback_list,temp_callback_list,LossPrinterCallback$new())}
+  else if (seperate == 0) { callbacks = c(list(EarlyStop, loss_tracked),beta_callback_list,temp_callback_list)}
 
   input_data <- as.matrix(data)
 
