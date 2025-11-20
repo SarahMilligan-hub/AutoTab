@@ -142,8 +142,8 @@ VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, p
     invisible(NULL)
   })
 
-  if (seperate == 1){callbacks = c(list(EarlyStop, loss_tracked),beta_callback_list,temp_callback_list,LossPrinterCallback$new())}
-  else if (seperate == 0) { callbacks = c(list(EarlyStop, loss_tracked),beta_callback_list,temp_callback_list)}
+  if (seperate == 1){callbacks = c(list(EarlyStop),beta_callback_list,temp_callback_list,LossPrinterCallback$new())}
+  else if (seperate == 0) { callbacks = c(list(EarlyStop),beta_callback_list,temp_callback_list)}
 
   input_data <- as.matrix(data)
 
