@@ -147,7 +147,6 @@ VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, p
 
   run_vae %>% keras::fit(input_data, input_data, epochs = epoch, batch_size = batchsize, validation_split = 0.2, callbacks=callbacks)
 
-
   return(list(trained_model = run_vae, loss_history = loss_history))
 }
 
