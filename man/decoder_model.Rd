@@ -72,18 +72,6 @@ if (reticulate::py_module_available("tensorflow") &&
     list("dense", 100, "relu")
   )
 
-  dec <- decoder_model(
-    decoder_input = NULL,
-    decoder_info  = decoder_info,
-    latent_dim    = 5,
-    feat_dist     = feat_dist,
-    lip_dec       = 0,
-    pi_dec        = 0,
-    max_std       = 10,
-    min_val       = 1e-3,
-    temperature   = 0.5
-  )
-
   # Rebuild and apply decoder
   weights_decoder <- Decoder_weights(
     encoder_layers = 2,

@@ -34,7 +34,7 @@ shown above.
 remotes::install_github("SarahMilligan-hub/AutoTab")
 
 # Load the package
-library(AutoTab)
+library(autoTab)
  
 ```
 
@@ -52,7 +52,7 @@ For an example of using a Mixture of Gaussian Prior run ?mog_prior
 ``` r
 #Before executing the example Initiate your Conda / Reticulate Environment 
 
-library(AutoTab)
+library(autoTab)
 library(dplyr)
 library(keras)
 library(caret)
