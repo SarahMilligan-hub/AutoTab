@@ -26,14 +26,13 @@ to data frames.
 }
 }
 \examples{
-\dontrun{
 x <- c(10, 20, 30)
 min_max_scale(x)
 
 # Apply to multiple columns
 data <- data.frame(age = c(20, 40, 60), income = c(3000, 5000, 7000))
 Continuous_MinMaxScaled = as.data.frame(lapply(data, min_max_scale))
-}
+
 
 }
 \seealso{

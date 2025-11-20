@@ -21,11 +21,23 @@ named as \verb{<original_name>_<level>} and therefore start with the original
 variable name.
 }
 \examples{
-\dontrun{
-feat_dist = feat_reorder(extracting_distribution(data_final),data)
-rownames(feat_dist) = NULL
-set_feat_dist(feat_dist)
-}
+# Small toy dataset
+data_example <- data.frame(
+  cont = rnorm(5),
+  bin  = c(0, 1, 0, 1, 1),
+  cat  = factor(c("A", "B", "C", "A", "C"))
+)
+
+# Extract feature distributions in original column order
+feat_dist <- extracting_distribution(data_example)
+
+# Suppose preprocessing (e.g., dummy coding) reordered the columns
+data_reordered <- data_example[, c("cat", "cont", "bin")]
+
+# Reorder feat_dist rows to match the preprocessed data columns
+feat_dist_reordered <- feat_reorder(feat_dist, data_reordered)
+feat_dist_reordered
+
 }
 \seealso{
 \code{\link[=extracting_distribution]{extracting_distribution()}}, \code{\link[=set_feat_dist]{set_feat_dist()}}

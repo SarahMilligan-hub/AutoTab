@@ -151,7 +151,7 @@ beta_callback <- function(beta_max = 0.01, warmup_epochs = 15) {
     on_epoch_begin = function(epoch, logs = NULL) {
       new_beta <- min(1, epoch / warmup_epochs) * beta_max
       keras::k_set_value(current_beta, new_beta)
-      print(paste("Beta updated to:", new_beta))
+      message(paste("Beta updated to:", new_beta))
     }
   )
   return(list(callback = callback, beta_var = current_beta))  }
@@ -173,7 +173,7 @@ cyclical_beta_callback = function(beta_max = 0.01, total_epochs = 1000, n_cycles
         beta = beta_max
       }
       keras::k_set_value(current_beta, beta)
-      print(sprintf("Cyclical Beta updated to: %.5f (epoch %d)", beta, epoch))
+      message(sprintf("Cyclical Beta updated to: %.5f (epoch %d)", beta, epoch))
     }
   )
   return(list(callback = callback, beta_var = current_beta))

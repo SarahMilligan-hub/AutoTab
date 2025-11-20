@@ -61,42 +61,51 @@ If \code{lip_dec = 1}, dense hidden layers are wrapped with
 #' spectral normalization using \code{pi_dec} power iterations.
 }
 \examples{
-\dontrun{
-# Assume you already have feat_dist set via set_feat_dist(feat_dist)
-decoder_info <- list(list("dense", 80, "relu"), list("dense", 100, "relu"))
-dec <- decoder_model(
-  decoder_input = NULL,
-  decoder_info  = decoder_info,
-  latent_dim    = 5,
-  feat_dist     = feat_dist,
-  lip_dec       = 0,
-  pi_dec        = 0,
-  max_std       = 10,
-  min_val       = 1e-3,
-  temperature   = 0.5
-)
+\donttest{
+if (reticulate::py_module_available("tensorflow") &&
+    exists("training") &&
+    exists("feat_dist")) {
 
-# Rebuild and apply decoder
-weights_decoder <- Decoder_weights(
- encoder_layers = 2,
-   trained_model = training$trained_model,
-     lip_enc = 0,
-       pi_enc = 0,
-       prior_learn = "fixed",
-       BNenc_layers = 0,
-       learn_BN = 0
-       )
+  # Assume you already have feat_dist set via set_feat_dist(feat_dist)
+  decoder_info <- list(
+    list("dense", 80, "relu"),
+    list("dense", 100, "relu")
+  )
 
-decoder <- decoder_model(
-decoder_input = NULL,
-decoder_info = decoder_info,
-latent_dim = 5,
-feat_dist = feat_dist,
-lip_dec = 0,
-pi_dec = 0
-)
+  dec <- decoder_model(
+    decoder_input = NULL,
+    decoder_info  = decoder_info,
+    latent_dim    = 5,
+    feat_dist     = feat_dist,
+    lip_dec       = 0,
+    pi_dec        = 0,
+    max_std       = 10,
+    min_val       = 1e-3,
+    temperature   = 0.5
+  )
 
-decoder \%>\% keras::set_weights(weights_decoder)
+  # Rebuild and apply decoder
+  weights_decoder <- Decoder_weights(
+    encoder_layers = 2,
+    trained_model  = training$trained_model,
+    lip_enc        = 0,
+    pi_enc         = 0,
+    prior_learn    = "fixed",
+    BNenc_layers   = 0,
+    learn_BN       = 0
+  )
+
+  decoder <- decoder_model(
+    decoder_input = NULL,
+    decoder_info  = decoder_info,
+    latent_dim    = 5,
+    feat_dist     = feat_dist,
+    lip_dec       = 0,
+    pi_dec        = 0
+  )
+
+  decoder \%>\% keras::set_weights(weights_decoder)
+}
 }
 
 }

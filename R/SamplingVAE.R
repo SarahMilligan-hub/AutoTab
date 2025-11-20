@@ -29,12 +29,14 @@
 #' @seealso [encoder_latent()], [Decoder_weights()], [VAE_train()], [Latent_sample()]
 #'
 #' @examples
-#' \dontrun{
 #' encoder_info <- list(
 #'   list("dense", 100, "relu"),
 #'   list("dense",  80, "relu")
 #' )
-#' # assume: training <- VAE_train(...)
+#'
+#'  \donttest{
+#' if (reticulate::py_module_available("tensorflow") &&
+#'     exists("training")) {
 #' weights_encoder <- Encoder_weights(
 #'   encoder_layers = 2,
 #'   trained_model  = training$trained_model, #where training = VAE_train(...)
@@ -44,6 +46,8 @@
 #'   learn_BN       = 0
 #' )
 #' }
+#' }
+#'
 #' @export
 Encoder_weights = function(encoder_layers, trained_model,lip_enc, pi_enc, BNenc_layers,learn_BN ){
   if (lip_enc == 1){
@@ -86,15 +90,16 @@ Encoder_weights = function(encoder_layers, trained_model,lip_enc, pi_enc, BNenc_
 #' @seealso [Encoder_weights()], [Latent_sample()], [Decoder_weights()]
 #'
 #' @examples
-#' \dontrun{
 #' encoder_info <- list(
 #'   list("dense", 100, "relu"),
 #'   list("dense",  80, "relu")
 #' )
-#' # assume: training <- VAE_train(...)
+#' \donttest{
+#' if (reticulate::py_module_available("tensorflow") &&
+#'     exists("training")) {
 #' weights_encoder <- Encoder_weights(
 #'   encoder_layers = 2,
-#'   trained_model  = training$trained_model,
+#'   trained_model  = training$trained_model,  #where training = VAE_train(...)
 #'   lip_enc        = 0,
 #'   pi_enc         = 0,
 #'   BNenc_layers   = 0,
@@ -110,6 +115,8 @@ Encoder_weights = function(encoder_layers, trained_model,lip_enc, pi_enc, BNenc_
 #' )
 #' latent_encoder %>% keras::set_weights(weights_encoder)
 #' }
+#' }
+#'
 #' @export
 encoder_latent = function(encoder_input,encoder_info,latent_dim,Lip_en, power_iterations){
   tf = tensorflow::tf
@@ -183,20 +190,23 @@ encoder_latent = function(encoder_input,encoder_info,latent_dim,Lip_en, power_it
 #' @seealso [decoder_model()], [Encoder_weights()], [VAE_train()]
 #'
 #' @examples
-#' \dontrun{
 #' decoder_info <- list(
 #'   list("dense", 80, "relu"),
 #'   list("dense", 100, "relu")
 #' )
+#' \donttest{
+#' if (reticulate::py_module_available("tensorflow") &&
+#'     exists("training")) {
 #' weights_decoder <- Decoder_weights(
 #'   encoder_layers = 2,
-#'   trained_model  = training$trained_model,
+#'   trained_model  = training$trained_model,  #where training = VAE_train(...)
 #'   lip_enc        = 0,
 #'   pi_enc         = 0,
 #'   prior_learn    = "fixed",
 #'   BNenc_layers   = 0,
 #'   learn_BN       = 0
 #' )
+#' }
 #' }
 #' @export
 Decoder_weights = function(encoder_layers,trained_model,lip_enc,pi_enc , prior_learn,BNenc_layers,learn_BN){

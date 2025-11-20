@@ -49,20 +49,23 @@ is not the only method available.
 }
 }
 \examples{
-\dontrun{
 decoder_info <- list(
   list("dense", 80, "relu"),
   list("dense", 100, "relu")
 )
+\donttest{
+if (reticulate::py_module_available("tensorflow") &&
+    exists("training")) {
 weights_decoder <- Decoder_weights(
   encoder_layers = 2,
-  trained_model  = training$trained_model,
+  trained_model  = training$trained_model,  #where training = VAE_train(...)
   lip_enc        = 0,
   pi_enc         = 0,
   prior_learn    = "fixed",
   BNenc_layers   = 0,
   learn_BN       = 0
 )
+}
 }
 }
 \seealso{

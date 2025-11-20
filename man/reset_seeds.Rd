@@ -31,9 +31,12 @@ Use it before training runs for reproducibility.
 }
 }
 \examples{
-\dontrun{
+\donttest{
+if (reticulate::py_module_available("tensorflow")) {
 reset_seeds(1234)
 }
+}
+
 
 }
 \seealso{

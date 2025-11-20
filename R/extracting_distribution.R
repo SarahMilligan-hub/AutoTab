@@ -46,7 +46,6 @@
 #' @return A data frame with columns `column_name`, `distribution`, and `num_params`. Note: refer to [feat_reorder()].
 #'
 #' @examples
-#' \dontrun{
 #' data_example <- data.frame(
 #'   cont = rnorm(5),
 #'   bin  = c(0,1,0,1,1),
@@ -61,7 +60,7 @@
 #' # 3         cat    categorical          3
 #'
 #' # The decoder will therefore output 6 total columns (2+1+3)
-#' }
+#'
 #'
 #' @seealso [feat_reorder()], [set_feat_dist()]
 #' @export
@@ -110,11 +109,23 @@ extracting_distribution = function(data){
 #' @return The input `feat_dist`, reordered to align with `data`.
 #'
 #' @examples
-#' \dontrun{
-#' feat_dist = feat_reorder(extracting_distribution(data_final),data)
-#' rownames(feat_dist) = NULL
-#' set_feat_dist(feat_dist)
-#' }
+#' # Small toy dataset
+#' data_example <- data.frame(
+#'   cont = rnorm(5),
+#'   bin  = c(0, 1, 0, 1, 1),
+#'   cat  = factor(c("A", "B", "C", "A", "C"))
+#' )
+#'
+#' # Extract feature distributions in original column order
+#' feat_dist <- extracting_distribution(data_example)
+#'
+#' # Suppose preprocessing (e.g., dummy coding) reordered the columns
+#' data_reordered <- data_example[, c("cat", "cont", "bin")]
+#'
+#' # Reorder feat_dist rows to match the preprocessed data columns
+#' feat_dist_reordered <- feat_reorder(feat_dist, data_reordered)
+#' feat_dist_reordered
+#'
 #' @seealso [extracting_distribution()], [set_feat_dist()]
 #' @export
 feat_reorder = function(feat_dist,data){

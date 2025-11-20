@@ -39,15 +39,16 @@ to produce \code{z_mean} and \code{z_log_var}.
 }
 }
 \examples{
-\dontrun{
 encoder_info <- list(
   list("dense", 100, "relu"),
   list("dense",  80, "relu")
 )
-# assume: training <- VAE_train(...)
+\donttest{
+if (reticulate::py_module_available("tensorflow") &&
+    exists("training")) {
 weights_encoder <- Encoder_weights(
   encoder_layers = 2,
-  trained_model  = training$trained_model,
+  trained_model  = training$trained_model,  #where training = VAE_train(...)
   lip_enc        = 0,
   pi_enc         = 0,
   BNenc_layers   = 0,
@@ -63,6 +64,8 @@ latent_encoder <- encoder_latent(
 )
 latent_encoder \%>\% keras::set_weights(weights_encoder)
 }
+}
+
 }
 \seealso{
 \code{\link[=Encoder_weights]{Encoder_weights()}}, \code{\link[=Latent_sample]{Latent_sample()}}, \code{\link[=Decoder_weights]{Decoder_weights()}}

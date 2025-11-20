@@ -28,7 +28,8 @@
   }
 
   tf_version <- tryCatch({
-    reticulate::py_run_string("import tensorflow as tf; print(tf.__version__)")$stdout
+    tfmod <- reticulate::import("tensorflow", delay_load = TRUE)
+    as.character(tfmod$`__version__`)
   }, error = function(e) NULL)
 
   if (is.null(tf_version)) {

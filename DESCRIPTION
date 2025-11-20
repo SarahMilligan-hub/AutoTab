@@ -1,11 +1,11 @@
-Package: AutoTab
+Package: autoTab
 Title: Variational Autoencoders for Heterogeneous Tabular Data
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person("Sarah", "Milligan", email = "slm1999@bu.edu", role = c("aut", "cre"))
 Description: Build and train a variational autoencoder (VAE) for mixed-type
     tabular data (continuous, binary, categorical).
-    Models are implemented using TensorFlow and Keras via the 'reticulate' 
+    Models are implemented using 'TensorFlow' and 'Keras' via the 'reticulate' 
     interface, enabling reproducible VAE training for heterogeneous tabular 
     datasets.
 License: MIT + file LICENSE
@@ -21,6 +21,8 @@ Imports:
     magrittr,
     R6,
     reticulate,
-    tensorflow,
+    tensorflow
+Suggests:
+    caret
 SystemRequirements: Python (>= 3.8); TensorFlow (>= 2.10); Keras; TensorFlow Addons
 

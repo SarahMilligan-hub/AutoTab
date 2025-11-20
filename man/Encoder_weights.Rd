@@ -47,12 +47,14 @@ is not the only method available.
 }
 }
 \examples{
-\dontrun{
 encoder_info <- list(
   list("dense", 100, "relu"),
   list("dense",  80, "relu")
 )
-# assume: training <- VAE_train(...)
+
+ \donttest{
+if (reticulate::py_module_available("tensorflow") &&
+    exists("training")) {
 weights_encoder <- Encoder_weights(
   encoder_layers = 2,
   trained_model  = training$trained_model, #where training = VAE_train(...)
@@ -62,6 +64,8 @@ weights_encoder <- Encoder_weights(
   learn_BN       = 0
 )
 }
+}
+
 }
 \seealso{
 \code{\link[=encoder_latent]{encoder_latent()}}, \code{\link[=Decoder_weights]{Decoder_weights()}}, \code{\link[=VAE_train]{VAE_train()}}, \code{\link[=Latent_sample]{Latent_sample()}}

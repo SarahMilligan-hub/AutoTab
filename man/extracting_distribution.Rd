@@ -59,7 +59,6 @@ ensuring that the reconstruction loss and sampling functions correctly handle
 each distributional head.
 }
 \examples{
-\dontrun{
 data_example <- data.frame(
   cont = rnorm(5),
   bin  = c(0,1,0,1,1),
@@ -74,7 +73,7 @@ print(feat_dist)
 # 3         cat    categorical          3
 
 # The decoder will therefore output 6 total columns (2+1+3)
-}
+
 
 }
 \seealso{

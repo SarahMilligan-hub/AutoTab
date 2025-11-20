@@ -7,7 +7,7 @@ temperature_callback = function(temperature = 1.5, temp_min = 0.5, warmup_epochs
     on_epoch_begin = function(epoch, logs = NULL) {
       new_temp <- max(temp_min, (1 - epoch / warmup_epochs) * temperature)
       keras::k_set_value(current_temp, new_temp)
-      print(paste("Temperature updated to:", round(new_temp, 4)))
+      message(paste("Temperature updated to:", round(new_temp, 4)))
     }  )
   return(list(callback = callback, temp_var = current_temp)) }
 
@@ -49,18 +49,14 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
   decoder_out = vector("list", n_feats)
   index_x = 0 #initialize the first index we look at as the first input of the tensor
 
-  #Print the input shape and feat_dist
-  print("Feature distribution data:")
-  print(feat_dist)
-
   #loop through all our features so we get the correct number of outputs
   for (i in seq_len(n_feats)) {
     feature      = feat_dist$column_name[i]
     distribution = feat_dist$distribution[i]
     num_params   = feat_dist$num_params[i]
 
-    # TRACKING: Print the current distribution and num_params and index
-    print(paste("Output- Processing feature", feature, "with distribution:", distribution, "and num_params:", num_params, "with index starting at", index_x))
+  # TRACKING: Print the current distribution and num_params and index
+    message(paste("Output- Processing feature", feature, "with distribution:", distribution, "and num_params:", num_params, "with index starting at", index_x))
 
     if (distribution=="gaussian"){
       mean_slice = tf$slice(input, begin=list(0L,as.integer(index_x)), size=list(tf$shape(input)[1], 1L))
@@ -138,42 +134,51 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #'   call `predict(decoder, Z)` where `Z` is an `n x latent_dim` matrix (typically a sample from your latent space).
 #'
 #' @examples
-#' \dontrun{
-#' # Assume you already have feat_dist set via set_feat_dist(feat_dist)
-#' decoder_info <- list(list("dense", 80, "relu"), list("dense", 100, "relu"))
-#' dec <- decoder_model(
-#'   decoder_input = NULL,
-#'   decoder_info  = decoder_info,
-#'   latent_dim    = 5,
-#'   feat_dist     = feat_dist,
-#'   lip_dec       = 0,
-#'   pi_dec        = 0,
-#'   max_std       = 10,
-#'   min_val       = 1e-3,
-#'   temperature   = 0.5
-#' )
+#' \donttest{
+#' if (reticulate::py_module_available("tensorflow") &&
+#'     exists("training") &&
+#'     exists("feat_dist")) {
 #'
-#'# Rebuild and apply decoder
-#'weights_decoder <- Decoder_weights(
-#'  encoder_layers = 2,
-#'    trained_model = training$trained_model,
-#'      lip_enc = 0,
-#'        pi_enc = 0,
-#'        prior_learn = "fixed",
-#'        BNenc_layers = 0,
-#'        learn_BN = 0
-#'        )
+#'   # Assume you already have feat_dist set via set_feat_dist(feat_dist)
+#'   decoder_info <- list(
+#'     list("dense", 80, "relu"),
+#'     list("dense", 100, "relu")
+#'   )
 #'
-#'decoder <- decoder_model(
-#'decoder_input = NULL,
-#'decoder_info = decoder_info,
-#'latent_dim = 5,
-#'feat_dist = feat_dist,
-#'lip_dec = 0,
-#'pi_dec = 0
-#')
+#'   dec <- decoder_model(
+#'     decoder_input = NULL,
+#'     decoder_info  = decoder_info,
+#'     latent_dim    = 5,
+#'     feat_dist     = feat_dist,
+#'     lip_dec       = 0,
+#'     pi_dec        = 0,
+#'     max_std       = 10,
+#'     min_val       = 1e-3,
+#'     temperature   = 0.5
+#'   )
 #'
-#'decoder %>% keras::set_weights(weights_decoder)
+#'   # Rebuild and apply decoder
+#'   weights_decoder <- Decoder_weights(
+#'     encoder_layers = 2,
+#'     trained_model  = training$trained_model,
+#'     lip_enc        = 0,
+#'     pi_enc         = 0,
+#'     prior_learn    = "fixed",
+#'     BNenc_layers   = 0,
+#'     learn_BN       = 0
+#'   )
+#'
+#'   decoder <- decoder_model(
+#'     decoder_input = NULL,
+#'     decoder_info  = decoder_info,
+#'     latent_dim    = 5,
+#'     feat_dist     = feat_dist,
+#'     lip_dec       = 0,
+#'     pi_dec        = 0
+#'   )
+#'
+#'   decoder %>% keras::set_weights(weights_decoder)
+#' }
 #' }
 #'
 #' @seealso [VAE_train()], [Decoder_weights()], [encoder_latent()], [Latent_sample()], [extracting_distribution()]

@@ -29,18 +29,22 @@
 #' @return A TensorFlow tensor of latent samples with the same shape as `z_mean`.
 #'
 #' @examples
-#' \dontrun{
 #' # Suppose encoder_latent() returns z_mean and z_log_var
-#' z_mean     <- matrix(rnorm(10), ncol = 5)
-#' z_log_var  <- matrix(rnorm(10), ncol = 5)
+#' z_mean    <- matrix(rnorm(10), ncol = 5)
+#' z_log_var <- matrix(rnorm(10), ncol = 5)
 #'
-#' # Sample from latent space
-#' z_sample <- Latent_sample(z_mean, z_log_var)
+#' \donttest{
+#' if (reticulate::py_module_available("tensorflow")) {
+#'   # Sample from latent space
+#'   z_sample <- Latent_sample(z_mean, z_log_var)
 #'
-#' # Convert to R matrix for decoder prediction
-#' z_mat <- as.matrix(z_sample)
-#' #Suppose the computational graph was rebuilt using `decoder_model()`` and was named decoder
-#' # decoder_output <- predict(decoder, z_mat)
+#'   # Convert to R matrix for decoder prediction
+#'   z_mat <- as.matrix(z_sample)
+#'
+#'   # Suppose the computational graph was rebuilt using `decoder_model()`
+#'   # and assigned to an object named `decoder`:
+#'   # decoder_output <- predict(decoder, z_mat)
+#' }
 #' }
 #'
 #' @seealso [VAE_train()], [encoder_latent()], [Encoder_weights()], [decoder_model()]
