@@ -76,7 +76,7 @@ extracting_distribution = function(data){
     name = colnames(data)[i]
 
     if (any(is.na(variable))) {
-      feat_dist$distribution[i] <- "Missing data - cannot use column"   # 🔧 replaced em dash
+      feat_dist$distribution[i] <- "Missing data - cannot use column"
       feat_dist$num_params[i] <- 0
       message(
         "STOP: The dataset has one or more columns with missing values. ",
