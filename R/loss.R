@@ -87,6 +87,5 @@ lossbasedondist = function(input, feat_dist, target,weighted=0, recon_weights){ 
   weighted_groups   <- tf$multiply(group_weights, group_losses)
   total_loss        <- tf$reduce_sum(weighted_groups, axis = 0L)
 
-  message(paste("Loss - total", total_loss))
   return(list(total_loss,cont_group_loss,bin_group_loss,cat_group_loss) )  }
 
