@@ -205,11 +205,50 @@ Therefore it is not an internally tracked object. However, it is being
 tracked and updated outside of the model graph which can be seen in the
 KL loss plots and in the training printout in the R console.
 
+# Help documentation
+
+AutoTab provides detailed documentation for each component of the VAE workflow.
+Access any help file using ?function_name (e.g., ?VAE_train).
+
+**Core Training Functions**
+
+*?VAE_train* — Runs the full AutoTab VAE training loop.
+
+*?encoder_decoder_information* — Documentation on encoder_info and decoder_info needed in VAE_train. 
+
+*?mog_prior* — Provides examples and guidance for specifying and using a Mixture-of-Gaussians (MoG) prior within VAE_train.
+
+**Feature Distribution Handling**
+
+*?extracting_distribution* — Determines distribution type (continuous, binary, categorical) for each variable.
+
+*?feat_reorder* — Reorders and aligns variables with the input dataset.
+
+*?set_feat_dist* — Registers the per-feature distribution metadata required for training.
+
+**Weight Extraction & Model Reconstruction**
+
+*?Encoder_weights* — Extracts trained encoder weights from a fitted AutoTab VAE.
+
+*?encoder_latent* — Builds the encoder up to the latent outputs (z_mean, z_log_var) for latent-space extraction.
+
+*?Latent_sample* — Implements the reparameterization trick for sampling latent variables.
+
+*?decoder_model* — Reconstructs the decoder architecture for sampling or downstream generation.
+
+*?decoder_weights* — Extracts trained decoder weights for reconstruction and generation.
+
+
+**Preprocessing and Utility Functions**
+
+*?min_max_scale* — Applies min–max scaling to continuous variables.
+
+*?reset_seeds* — Ensures full reproducibility across R, Python, and TensorFlow.
+
 
 # Citing AutoTab
 
 If you use AutoTab in your research, please cite:
-
 
 Milligan, S. (2025). AutoTab: Variational Autoencoders for Heterogeneous 
 Tabular Data. GitHub version 0.1.1 
