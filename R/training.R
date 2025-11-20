@@ -137,8 +137,8 @@ VAE_train = function(data,encoder_info, decoder_info,Lip_en, pi_enc=1,lip_dec, p
   #Tracking loss as we go
   loss_history <-list()
   loss_tracked = keras::callback_lambda(on_epoch_end = function(epoch,logs){
-    message(paste("Epoch", epoch+1, "Loss:", logs$loss, "Recon",logs$recon_loss, "KL_loss",logs$kl_loss  ))
     loss_history[[epoch+1]] <<- logs$loss
+    message(paste("Epoch", epoch+1, "Loss:", logs$loss, "Recon",logs$recon_loss, "KL_loss",logs$kl_loss  ))
     invisible(NULL)
   })
 
