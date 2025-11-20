@@ -198,11 +198,10 @@ KL loss plots and in the training printout in the R console.
 If you use AutoTab in your research, please cite:
 
 Milligan, S. (2025). AutoTab: Variational Autoencoders for Heterogeneous
-Tabular Data. GitHub version 0.1.0. URL:
+Tabular Data. GitHub version 0.1.1 URL:
 <https://github.com/SarahMilligan-hub/AutoTab>
 
 Once the package is on CRAN, please update the citation to:
 
 Milligan, S. (2025). AutoTab: Variational Autoencoders for Heterogeneous
-Tabular Data. R package version 0.1.0.  
-<https://CRAN.R-project.org/package=AutoTab>
+Tabular Data. R package version 0.1.1
