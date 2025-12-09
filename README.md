@@ -27,7 +27,7 @@ Other versions may work, but compatibility is not guaranteed.
 
 AutoTab was developed under Python 3.10.8 and numpy 1.26.4. If
 compatibility issues arise, we recommend using the tested configuration
-shown above.
+described above.
 
 ``` r
 # Install on CRAN
