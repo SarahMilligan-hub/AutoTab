@@ -246,6 +246,6 @@ TensorFlow.
 
 If you use AutoTab in your research, please cite:
 
-Milligan, S. (2025). AutoTab: Variational Autoencoders for Heterogeneous
-Tabular Data. R package version 0.1.1. URL:
-<https://cran.r-project.org/package=autotab>
+Milligan S (2025). autotab: Variational Autoencoders for Heterogeneous
+Tabular Data. R package version 0.1.1.
+<doi:10.32614/CRAN.package.autotab>.
