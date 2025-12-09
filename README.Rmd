@@ -42,8 +42,8 @@ If compatibility issues arise, we recommend using the tested
 configuration shown above.
 
 ``` r
-# Install from GitHub
-remotes::install_github("SarahMilligan-hub/AutoTab")
+# Install on CRAN
+install.packages("autotab")
 
 # Load the package
 library(autoTab)
