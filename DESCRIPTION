@@ -1,6 +1,6 @@
 Package: autotab
 Title: Variational Autoencoders for Heterogeneous Tabular Data
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     person("Sarah", "Milligan", email = "slm1999@bu.edu", role = c("aut", "cre"))
 Description: Build and train a variational autoencoder (VAE) for mixed-type
