@@ -4,6 +4,8 @@
 #############################
 #' @keywords internal
 lossbasedondist = function(input, feat_dist, target,weighted=0, recon_weights){ #here the "input" data set contains the output of the VAE, target is the real data (dummy coded)
+  tf = tensorflow::tf
+
   index_x = 0L #start at zero just as we did when defining the activation functions since tensors start at 0
   index_y = 0L
   cont_loss_LL = list()
@@ -17,7 +19,10 @@ lossbasedondist = function(input, feat_dist, target,weighted=0, recon_weights){ 
     num_params = variable$num_params
 
     # TRACKING: Print the current distribution and num_params and index
-    print(paste("Loss - Processing feature", index_type, "with distribution:", distribution, "and num_params:", num_params, "with index starting at", index_x))
+    message(paste("Loss - Processing feature", index_type,
+                  "with distribution:", distribution,
+                  "and num_params:", num_params,
+                  "with index starting at", index_x))
 
     if (distribution=="gaussian"){
       mean = tf$slice(input, begin=list(0L,as.integer(index_x)), size=list(tf$shape(input)[1], 1L))
@@ -88,6 +93,6 @@ lossbasedondist = function(input, feat_dist, target,weighted=0, recon_weights){ 
   weighted_groups   <- tf$multiply(group_weights, group_losses)
   total_loss        <- tf$reduce_sum(weighted_groups, axis = 0L)
 
-  print(paste("Loss - total", total_loss))
+  message(paste("Loss - total", total_loss))
   return(list(total_loss,cont_group_loss,bin_group_loss,cat_group_loss) )  }
 
