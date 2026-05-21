@@ -102,7 +102,7 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #'
 #' Reconstructs the **decoder** computational graph used during training. This is used
 #' internally by `VAE_train()` and externally when you want to load the trained
-#' decoder weights and generate new samples by sampling the latent space.
+#' decoder weights and generate new samples.
 #'
 #' @details
 #' The final output layer of an AutoTab decoder slices outputs by feature distribution in `feat_dist`:
@@ -131,7 +131,7 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #'
 #' @return A compiled **Keras model** representing the decoder computational graph. You can
 #'   load trained decoder weights with `Decoder_weights()` + `set_weights()`, then
-#'   call `predict(decoder, Z)` where `Z` is an `n x latent_dim` matrix (typically a sample from your latent space).
+#'   call `predict(decoder, Z)` where `Z` is an `n x latent_dim` matrix.
 #'
 #' @examples
 #' \donttest{
@@ -218,7 +218,20 @@ decoder_model = function(decoder_input, decoder_info, latent_dim, feat_dist,lip_
 
   }
 
-  decoder_output = decoder_activation(input=decoder_hidden, feat_dist=feat_dist,max_std=max_std, min_val=min_val,temperature=temperature)
+  output_dim <- 0L
+  for (r in 1:nrow(feat_dist)) {
+    if (feat_dist$distribution[r] == "ordinal") {
+      output_dim <- output_dim + as.integer(feat_dist$num_params[r] - 1L)
+    } else {
+      output_dim <- output_dim + as.integer(feat_dist$num_params[r])
+    }
+  }
+
+  decoder_params <- decoder_hidden %>%
+    layer_dense(units = output_dim, activation = "linear", name = "decoder_output_linear")
+
+
+  decoder_output = decoder_activation(input=decoder_params, feat_dist=feat_dist,max_std=max_std, min_val=min_val,temperature=temperature)
   model = keras::keras_model(inputs=decoder_input, outputs= decoder_output)
   return(model)}
 

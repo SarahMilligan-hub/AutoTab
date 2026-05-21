@@ -26,8 +26,7 @@ lossbasedondist = function(input, feat_dist, target,weighted=0, recon_weights){ 
 
     if (distribution=="gaussian"){
       mean = tf$slice(input, begin=list(0L,as.integer(index_x)), size=list(tf$shape(input)[1], 1L))
-      SD_raw = tf$slice(input, begin=list(0L,as.integer(index_x+1)), size=list(tf$shape(input)[1], 1L))
-      SD = tf$math$softplus(SD_raw) + 1e-3 #ensure SD will be positive so continuous recon does not come out negative
+      SD = tf$slice(input, begin=list(0L,as.integer(index_x+1)), size=list(tf$shape(input)[1], 1L))
 
       ll = 0.5*tf$math$log(2*pi)+tf$math$log(SD)+0.5*tf$square(((tf$slice(target, begin=list(0L,as.integer(index_y)), size=list(tf$shape(input)[1], 1L)) - mean)/ SD))
       #This is the typical negative log likelihood. It pulls the true target mean, and uses the VAE output SD and mean

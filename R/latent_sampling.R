@@ -10,7 +10,8 @@
 #' where \eqn{\epsilon \sim \mathcal{N}(0, I)}.
 #'
 #' The function is used internally within `VAE_train()` but can also be
-#' called directly to sample latent points and decode synthetic output.
+#' called directly to sample latent points. This can be used to visualize the
+#' latent space.
 #' Typically, `z_mean` and `z_log_var` are obtained via [`encoder_latent()`]
 #' and the corresponding weights extracted using [`Encoder_weights()`].
 #'
@@ -21,7 +22,7 @@
 #'
 #' This function returns a TensorFlow tensor representing the sampled latent
 #' points. Use `as.matrix()` or `as.data.frame()` to convert to an R matrix or data frame before passing to
-#' [`decoder_model()`] or other R functions.
+#' other R functions.
 #'
 #' @param z_mean TensorFlow tensor or R matrix. The mean values of the latent space.
 #' @param z_log_var TensorFlow tensor or R matrix. The log-variances of the latent space.
@@ -41,13 +42,10 @@
 #'   # Convert to R matrix for decoder prediction
 #'   z_mat <- as.matrix(z_sample)
 #'
-#'   # Suppose the computational graph was rebuilt using `decoder_model()`
-#'   # and assigned to an object named `decoder`:
-#'   # decoder_output <- predict(decoder, z_mat)
 #' }
 #' }
 #'
-#' @seealso [VAE_train()], [encoder_latent()], [Encoder_weights()], [decoder_model()]
+#' @seealso [VAE_train()], [encoder_latent()], [Encoder_weights()]
 #' @export
 Latent_sample = function(z_mean, z_log_var){
   tf = tensorflow::tf

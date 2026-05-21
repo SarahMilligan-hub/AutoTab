@@ -5,7 +5,7 @@ AutoTab is a flexible R package for training Variational Autoencoders
 (VAEs) on heterogeneous tabular data. It supports continuous, binary,
 and categorical variables within a single model and includes a custom
 loss function and decoder architecture that automatically handles each
-distribution type.
+variable type.
 
 In the decoder, the final activation layer slices the output tensor by
 distribution, preserving a single amortized decoder with shared hidden
@@ -20,7 +20,7 @@ available options.
 
 ## Installation
 
-When loading the package via library(AutoTab), AutoTab will remind you
+When loading the package via library(autotab), AutoTab will remind you
 to activate your reticulate/conda environment before running any model
 functions. AutoTab has been developed and tested with TensorFlow 2.10.0.
 Other versions may work, but compatibility is not guaranteed.
@@ -165,11 +165,9 @@ decoder <- decoder_model(
 
 decoder %>% keras::set_weights(weights_decoder)
 
-# Sample from latent space
+# Get a sample from the assumed prior (Assume N(0,1) here)
+sample_latent <- matrix(rnorm(nrow(data) * latent), nrow = nrow(data), ncol = latent)
 
-z_mean <- latent_space[[1]]
-z_log_var <- latent_space[[2]]
-sample_latent <- Latent_sample(z_mean, z_log_var)
 
 decoder_sample <- predict(decoder, as.matrix(sample_latent))
 decoder_sample <- as.data.frame(decoder_sample)
@@ -246,6 +244,6 @@ TensorFlow.
 
 If you use AutoTab in your research, please cite:
 
-Milligan S (2025). autotab: Variational Autoencoders for Heterogeneous
-Tabular Data. R package version 1.0.
+Milligan S (2026). autotab: Variational Autoencoders for Heterogeneous
+Tabular Data. R package version 1.0.1
 <doi:10.32614/CRAN.package.autotab>.
