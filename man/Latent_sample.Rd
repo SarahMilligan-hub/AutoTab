@@ -23,7 +23,8 @@ where \eqn{\epsilon \sim \mathcal{N}(0, I)}.
 }
 \details{
 The function is used internally within \code{VAE_train()} but can also be
-called directly to sample latent points and decode synthetic output.
+called directly to sample latent points. This can be used to visualize the
+latent space.
 Typically, \code{z_mean} and \code{z_log_var} are obtained via \code{\link[=encoder_latent]{encoder_latent()}}
 and the corresponding weights extracted using \code{\link[=Encoder_weights]{Encoder_weights()}}.
 \itemize{
@@ -34,7 +35,7 @@ numerical overflow or vanishing variance during training.
 
 This function returns a TensorFlow tensor representing the sampled latent
 points. Use \code{as.matrix()} or \code{as.data.frame()} to convert to an R matrix or data frame before passing to
-\code{\link[=decoder_model]{decoder_model()}} or other R functions.
+other R functions.
 }
 \examples{
 # Suppose encoder_latent() returns z_mean and z_log_var
@@ -49,13 +50,10 @@ if (reticulate::py_module_available("tensorflow")) {
   # Convert to R matrix for decoder prediction
   z_mat <- as.matrix(z_sample)
 
-  # Suppose the computational graph was rebuilt using `decoder_model()`
-  # and assigned to an object named `decoder`:
-  # decoder_output <- predict(decoder, z_mat)
 }
 }
 
 }
 \seealso{
-\code{\link[=VAE_train]{VAE_train()}}, \code{\link[=encoder_latent]{encoder_latent()}}, \code{\link[=Encoder_weights]{Encoder_weights()}}, \code{\link[=decoder_model]{decoder_model()}}
+\code{\link[=VAE_train]{VAE_train()}}, \code{\link[=encoder_latent]{encoder_latent()}}, \code{\link[=Encoder_weights]{Encoder_weights()}}
 }

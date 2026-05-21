@@ -44,12 +44,12 @@ entry is \code{list("dropout", rate)}. Optional elements:
 \value{
 A compiled \strong{Keras model} representing the decoder computational graph. You can
 load trained decoder weights with \code{Decoder_weights()} + \code{set_weights()}, then
-call \code{predict(decoder, Z)} where \code{Z} is an \verb{n x latent_dim} matrix (typically a sample from your latent space).
+call \code{predict(decoder, Z)} where \code{Z} is an \verb{n x latent_dim} matrix.
 }
 \description{
 Reconstructs the \strong{decoder} computational graph used during training. This is used
 internally by \code{VAE_train()} and externally when you want to load the trained
-decoder weights and generate new samples by sampling the latent space.
+decoder weights and generate new samples.
 }
 \details{
 The final output layer of an AutoTab decoder slices outputs by feature distribution in \code{feat_dist}:

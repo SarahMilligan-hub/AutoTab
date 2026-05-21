@@ -228,7 +228,7 @@ decoder_model = function(decoder_input, decoder_info, latent_dim, feat_dist,lip_
   }
 
   decoder_params <- decoder_hidden %>%
-    layer_dense(units = output_dim, activation = "linear", name = "decoder_output_linear")
+    keras::layer_dense(units = output_dim, activation = "linear", name = "decoder_output_linear")
 
 
   decoder_output = decoder_activation(input=decoder_params, feat_dist=feat_dist,max_std=max_std, min_val=min_val,temperature=temperature)
