@@ -34,7 +34,7 @@ described above.
 install.packages("autotab")
 
 # Load the package
-library(autoTab)
+library(autotab)
  
 ```
 
@@ -165,7 +165,7 @@ decoder <- decoder_model(
 decoder %>% keras::set_weights(weights_decoder)
 
 # Get a sample from the assumed prior (Assume N(0,1) here)
-sample_latent <- matrix(rnorm(nrow(data) * latent), nrow = nrow(data), ncol = latent)
+sample_latent <- matrix(rnorm(nrow(data) * 5), nrow = nrow(data), ncol = 5)
 
 
 decoder_sample <- predict(decoder, as.matrix(sample_latent))
@@ -229,7 +229,7 @@ latent variables.
 *?decoder_model* — Reconstructs the decoder architecture for sampling or
 downstream generation.
 
-*?decoder_weights* — Extracts trained decoder weights for reconstruction
+*?Decoder_weights* — Extracts trained decoder weights for reconstruction
 and generation.
 
 **Preprocessing and Utility Functions**
