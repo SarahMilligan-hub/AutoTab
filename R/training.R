@@ -69,10 +69,10 @@
 #'  but are not present in its tracked objects:   <tf.Variable 'beta:0' shape=() dtype=float32>.
 #'   This is a strong indication that the Lambda layer should be rewritten as a subclassed Layer."
 #'
-#'   This is merely a warning and should not effect the computation of AutoTab.
+#'   This is merely a warning and should not affect the computation of AutoTab.
 #'   This occurs because tensorflow does not see beta, (the weight on the regularization part of the ELBO)
 #'   until after the first iteration of training and the first computation of the loss is initiated.
-#'   Therefore it is not an internally tracked object. However, it  is being tracked and updated outside
+#'   Therefore it is not an internally tracked object. However, itis being tracked and updated outside
 #'    of the model graph which can be seen in the KL loss plots and in the training printout in the R console.
 #'
 #'

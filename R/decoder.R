@@ -111,9 +111,9 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #' and Categorical heads use Gumbel–Softmax with the given `temperature`.
 #'
 #' If `lip_dec = 1`, dense hidden layers are wrapped with
-#' #' spectral normalization using `pi_dec` power iterations.
+#' spectral normalization using `pi_dec` power iterations.
 #'
-#' @param decoder_input Ignored; pass `NULL`. No input is needed when building the compitational graph.
+#' @param decoder_input Ignored; pass `NULL`. No input is needed when building the computational graph.
 #' @param decoder_info List defining the decoder architecture, e.g.
 #'   `list(list("dense", 80, "relu"), list("dropout", 0.1), list("dense", 100, "relu"))`.
 #'   Each `dense` entry is `list("dense", units, activation)`. Each `dropout`
