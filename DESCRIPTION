@@ -23,6 +23,7 @@ Imports:
     reticulate,
     tensorflow
 Suggests:
+    dplyr,
     caret,
     knitr,
     rmarkdown,

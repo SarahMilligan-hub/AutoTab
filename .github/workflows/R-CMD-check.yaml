@@ -41,6 +41,11 @@ jobs:
         if: matrix.config.os != 'macos-latest'
         run: |
           Rscript -e 'library(autotab); install_autotab_env()'
+      - name: Point reticulate at the autotab conda environment
+        if: matrix.config.os != 'macos-latest'
+        shell: bash
+        run: |
+          echo "RETICULATE_PYTHON=$(Rscript -e 'cat(reticulate::conda_python(\"r-autotab-env\"))')" >> $GITHUB_ENV
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
