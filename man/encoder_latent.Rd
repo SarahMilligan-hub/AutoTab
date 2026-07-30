@@ -39,14 +39,8 @@ to produce \code{z_mean} and \code{z_log_var}.
 }
 }
 \examples{
-encoder_info <- list(
-  list("dense", 100, "relu"),
-  list("dense",  80, "relu")
-)
 \donttest{
-if (reticulate::py_module_available("tensorflow") &&
-exists("training") &&
-exists("data")) {
+if (reticulate::py_module_available("tensorflow")) {
 
  library("autotab")
  library("caret")

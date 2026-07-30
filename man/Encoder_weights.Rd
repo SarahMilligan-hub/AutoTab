@@ -49,9 +49,7 @@ is not the only method available.
 \examples{
 
  \donttest{
-if (reticulate::py_module_available("tensorflow") &&
-exists("training") &&
-exists("data")) {
+if (reticulate::py_module_available("tensorflow")) {
 
  library("autotab")
  library("caret")

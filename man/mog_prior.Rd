@@ -75,7 +75,7 @@ latent space.
 \donttest{
 if (requireNamespace("caret", quietly = TRUE) &&
     reticulate::py_module_available("tensorflow")) {
-
+  library(caret)
   # -------------------------------
   # Data simulation and preparation
   # -------------------------------

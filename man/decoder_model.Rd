@@ -62,9 +62,7 @@ If \code{lip_dec = 1}, dense hidden layers are wrapped with
 }
 \examples{
 \donttest{
-if (reticulate::py_module_available("tensorflow") &&
-    exists("training") &&
-    exists("feat_dist")) {
+if (reticulate::py_module_available("tensorflow")) {
 
   library("autotab")
   library("caret")
