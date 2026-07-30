@@ -45,7 +45,7 @@ jobs:
         if: matrix.config.os != 'macos-latest'
         shell: bash
         run: |
-          echo "RETICULATE_PYTHON=$(Rscript -e 'cat(reticulate::conda_python(\"r-autotab-env\"))')" >> $GITHUB_ENV
+          echo "RETICULATE_PYTHON=$(Rscript -e 'cat(reticulate::conda_python("r-autotab-env"))')" >> $GITHUB_ENV
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
