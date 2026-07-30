@@ -10,9 +10,24 @@ set_feat_dist(feat_dist)
 \item{feat_dist}{A data.frame returned by \code{extracting_distribution()}
 or \code{feat_reorder()}.}
 }
+\value{
+No output is printed to the console. \code{feat_dist} is stored
+internally so other AutoTab functions (e.g., \code{VAE_train()}) can
+access it.
+}
 \description{
 This function stores the output of \code{extracting_distribution()} /
 \code{feat_reorder()} inside the package, so subsequent functions (e.g.,
 \code{VAE_train()}) can access it safely without relying on the global
 environment.
+}
+\examples{
+feat_dist <- data.frame(
+  column_name = c("age", "smoker"),
+  distribution = c("gaussian", "bernoulli"),
+  num_params = c(2, 1)
+)
+set_feat_dist(feat_dist)
+
+
 }
