@@ -31,12 +31,11 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, local::.
           needs: check
       - name: Install Python / TensorFlow environment
         if: matrix.config.os != 'macos-latest'
         run: |
-          Rscript -e 'remotes::install_local(".", dependencies = TRUE)'
           Rscript -e 'library(autotab); install_autotab_env()'
       - uses: r-lib/actions/check-r-package@v2
         with:
