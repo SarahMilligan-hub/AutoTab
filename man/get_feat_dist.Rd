@@ -6,10 +6,7 @@
 \usage{
 get_feat_dist()
 }
-\value{
-A data.frame containing feature distribution metadata.
-}
 \description{
-Retrieves the \code{feat_dist} object previously stored by
-\code{set_feat_dist()}.  Throws an error if it has not been set.
+Get the stored feature distribution
 }
+\keyword{internal}

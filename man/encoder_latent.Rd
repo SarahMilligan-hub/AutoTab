@@ -45,24 +45,79 @@ encoder_info <- list(
 )
 \donttest{
 if (reticulate::py_module_available("tensorflow") &&
-    exists("training")) {
-weights_encoder <- Encoder_weights(
-  encoder_layers = 2,
-  trained_model  = training$trained_model,  #where training = VAE_train(...)
-  lip_enc        = 0,
-  pi_enc         = 0,
-  BNenc_layers   = 0,
-  learn_BN       = 0
-)
+exists("training") &&
+exists("data")) {
 
-latent_encoder <- encoder_latent(
+ library("autotab")
+ library("caret")
+ library("dplyr")
+
+ #Bring in data from autotab package
+  data("data_example")
+
+####################################
+####### PREPROCESSING DATA #########
+####################################
+
+  #Create One hot coding for categorical variables
+ encoded_data = dummyVars(~ socio +marital+employ+race+edu,
+   data = data_example)
+ one_hot_encoded = as.data.frame(predict(encoded_data,
+      newdata = data_example))
+
+ #Standardize continuous
+ data_cont = subset(data_example,
+       select = c(age, height,weight,SBP,cholesterol ))
+ data_scaled = as.data.frame(
+       lapply(data_cont, min_max_scale))
+
+ data_bin= subset(data_example,
+      select = c(female,history,smoke,hyperten,heart))
+ data = cbind(data_scaled, data_bin,one_hot_encoded)
+
+##################################
+## GETTING FEATURE DISTRIBUTION ##
+##################################
+
+feat_dist = extracting_distribution(data_example)
+print(feat_dist)
+
+set_feat_dist(feat_dist)
+
+#########################################
+#Creating encoder_info and decoder_info #
+#########################################
+encoder_info = list(list("dense",50,"tanh"), list("dense", 100, "tanh"))
+decoder_info = list(list("dense",100, "tanh"), list("dense", 50, "tanh"))
+
+reset_seeds(2026)
+training = VAE_train(data, encoder_info=encoder_info,
+         decoder_info=decoder_info, latent_dim=10, batchsize = 32,
+         epoch = 5, beta = 0.2, temperature = 1.2,
+         Lip_en = 0, lip_dec = 0, wait=50, lr = 0.00001)
+
+weights_encoder <- Encoder_weights(
+   encoder_layers = 2,
+   trained_model  = training$trained_model,  #where training = VAE_train(...)
+   lip_enc        = 0,
+   pi_enc         = 0,
+   BNenc_layers   = 0,
+   learn_BN       = 0
+  )
+
+
+ latent_encoder <- encoder_latent(
   encoder_input    = data,
   encoder_info     = encoder_info,
-  latent_dim       = 5,
+  latent_dim       = 10,
   Lip_en           = 0,
   power_iterations = 0
-)
+  )
+
 latent_encoder \%>\% keras::set_weights(weights_encoder)
+
+summary(latent_encoder)
+
 }
 }
 
