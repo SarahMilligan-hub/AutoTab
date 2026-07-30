@@ -187,7 +187,7 @@ that has the dependencies needed for the implementation of AutoTab. A
 Conda environment is a self-contained environment that allows the user to
 have control over Python and package versions. The package reticulate is
 then used to point to the correct Conda environment. AutoTab is built and
-tested using Python 3.11 and TensorFlow 2.14.
+tested using Python 3.11 and TensorFlow 2.13.
 
 AutoTab includes a dedicated function, `install_autotab_env()`, that
 automatically builds this Conda environment using a bundled environment
@@ -219,7 +219,7 @@ remaining portions of the vingette run. Without an active conda environment
 the vingette will not run portions of the code that require the conda
 enviorment.
 
-AutoTab was built using TensorFlow version 2.14 and may be incompatible
+AutoTab was built using TensorFlow version 2.13 and may be incompatible
 with some system configurations, particularly older macOS software
 environments. If compatibility issues arise, we recommend using a virtual
 environment with the required dependencies or running AutoTab in a

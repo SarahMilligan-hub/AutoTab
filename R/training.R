@@ -76,6 +76,88 @@
 #'    of the model graph which can be seen in the KL loss plots and in the training printout in the R console.
 #'
 #'
+#' @examples
+#' \donttest{
+#' if (reticulate::py_module_available("tensorflow")) {
+#'
+#' library(autotab)
+#' library(dplyr)
+#' library(keras)
+#' library(caret)
+#'
+#' set.seed(123)
+#' age        <- rnorm(100, mean = 45, sd = 12)
+#' income     <- rnorm(100, mean = 60000, sd = 15000)
+#' bmi        <- rnorm(100, mean = 25, sd = 4)
+#' smoker     <- rbinom(100, 1, 0.25)
+#' exercise   <- rbinom(100, 1, 0.6)
+#' diabetic   <- rbinom(100, 1, 0.15)
+#' education  <- sample(c("HighSchool", "College", "Graduate"), 100,
+#'                       replace = TRUE, prob = c(0.4, 0.4, 0.2))
+#' marital    <- sample(c("Single", "Married", "Divorced"), 100, replace = TRUE)
+#' occupation <- sample(c("Clerical", "Technical", "Professional", "Other"),
+#'                       100, replace = TRUE)
+#'
+#' data_final <- data.frame(
+#'   age, income, bmi,
+#'   smoker, exercise, diabetic,
+#'   education, marital, occupation
+#' )
+#'
+#' encoded_data <- dummyVars(~ education + marital + occupation, data = data_final)
+#' one_hot_coded <- as.data.frame(predict(encoded_data, newdata = data_final))
+#'
+#' data_cont <- subset(data_final, select = c(age, income, bmi))
+#' Continuous_MinMaxScaled <- as.data.frame(lapply(data_cont, min_max_scale))
+#' data_bin <- subset(data_final, select = c(smoker, exercise, diabetic))
+#'
+#' # Bind all data together
+#' data <- cbind(Continuous_MinMaxScaled, data_bin, one_hot_coded)
+#'
+#' # Step 1: Extract and set feature distributions
+#' feat_dist <- feat_reorder(extracting_distribution(data_final), data)
+#' rownames(feat_dist) <- NULL
+#' set_feat_dist(feat_dist)
+#'
+#' # Step 2: Define encoder and decoder architectures
+#' encoder_info <- list(
+#'   list("dense", 25, "relu"),
+#'   list("dense", 50, "relu")
+#' )
+#' decoder_info <- list(
+#'   list("dense", 50, "relu"),
+#'   list("dense", 25, "relu")
+#' )
+#'
+#' reset_seeds(1234)
+#'
+#' training <- VAE_train(
+#'   data          = data,
+#'   encoder_info  = encoder_info,
+#'   decoder_info  = decoder_info,
+#'   Lip_en        = 0,
+#'   pi_enc        = 0,
+#'   lip_dec       = 0,
+#'   pi_dec        = 0,
+#'   latent_dim    = 5,
+#'   epoch         = 5,
+#'   beta          = 0.01,
+#'   kl_warm       = TRUE,
+#'   beta_epoch    = 20,
+#'   temperature   = 0.5,
+#'   batchsize     = 16,
+#'   wait          = 20,
+#'   lr            = 0.001
+#' )
+#'
+#' # trained_model is the compiled Keras model (encoder + decoder)
+#' summary(training$trained_model)
+#'
+#' # loss_history holds the per-epoch total loss tracked during training
+#' print(training$loss_history)
+#'
+#' }
+#' }
 #' @seealso [set_feat_dist()], [extracting_distribution()], [feat_reorder()],
 #'   [Encoder_weights()], [encoder_latent()], [Decoder_weights()], [Latent_sample()]
 #' @export

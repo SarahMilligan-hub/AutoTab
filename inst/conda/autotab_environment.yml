@@ -8,6 +8,7 @@ dependencies:
   - scipy=1.15.2
   - pip=25.0.1
   - pip:
-      - tensorflow==2.14.0
-      - keras==2.14.0
+      - tensorflow==2.13.0
+      - keras==2.13.1
       - tensorflow-addons==0.22.0
+

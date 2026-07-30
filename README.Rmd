@@ -34,10 +34,10 @@ available options.
 
 When loading the package via library(autotab), AutoTab will remind you
 to activate your reticulate/conda environment before running any model
-functions. AutoTab has been developed and tested with TensorFlow 2.10.0.
+functions. AutoTab has been developed and tested with TensorFlow 2.13.0.
 Other versions may work, but compatibility is not guaranteed.
 
-AutoTab was developed under Python 3.10.8 and numpy 1.26.4.
+AutoTab was developed under Python 3.11.15 and numpy 1.26.4.
 If compatibility issues arise, we recommend using the tested 
 configuration described above.
 
@@ -64,7 +64,6 @@ For an example of using a Mixture of Gaussian Prior run ?mog_prior
 ``` r
 #Before executing the example Initiate your Conda / Reticulate Environment 
 
-library(autoTab)
 library(dplyr)
 library(keras)
 library(caret)
@@ -128,7 +127,7 @@ training <- VAE_train(
   temperature = 0.5,
   batchsize = 16,
   wait = 20,
-  lr = 0.001, 
+  lr = 0.001 
 )
 
 # Step 4: Extract encoder and decoder for sampling
