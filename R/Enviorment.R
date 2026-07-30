@@ -4,6 +4,25 @@
 #' stack that AutoTab requires, using the bundled environment specification.
 #'
 #' @param conda Path to conda binary, or "auto" to let reticulate locate it.
+#'
+#' @return The environment name, `"r-autotab-env"`, as a character string.
+#'   The main effect of this function is creating that conda environment on
+#'   the user's machine from the bundled specification file — installing
+#'   Python, TensorFlow, Keras, and related packages (~1GB download). If the
+#'   environment already exists, no reinstallation occurs; a message is
+#'   printed instead.
+#'
+#' @examples
+#' \dontrun{
+#' # Creates the 'r-autotab-env' conda environment (downloads TensorFlow,
+#' # Keras, and related packages, ~1GB). Not run automatically since this
+#' # performs a large one-time installation with real network/disk cost.
+#' install_autotab_env()
+#'
+#' # Then, in each new R session, activate it before using AutoTab:
+#' reticulate::use_condaenv("r-autotab-env", required = TRUE)
+#' }
+#'
 #' @export
 install_autotab_env <- function(conda = "auto") {
 

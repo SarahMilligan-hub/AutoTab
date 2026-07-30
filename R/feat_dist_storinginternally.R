@@ -14,6 +14,20 @@
 #'
 #' @param feat_dist A data.frame returned by `extracting_distribution()`
 #'   or `feat_reorder()`.
+#'
+#' @return No output is printed to the console. `feat_dist` is stored
+#'   internally so other AutoTab functions (e.g., `VAE_train()`) can
+#'   access it.
+#'
+#' @examples
+#' feat_dist <- data.frame(
+#'   column_name = c("age", "smoker"),
+#'   distribution = c("gaussian", "bernoulli"),
+#'   num_params = c(2, 1)
+#' )
+#' set_feat_dist(feat_dist)
+#'
+#'
 #' @export
 set_feat_dist <- function(feat_dist) {
   stopifnot(
