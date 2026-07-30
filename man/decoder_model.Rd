@@ -17,7 +17,7 @@ decoder_model(
 )
 }
 \arguments{
-\item{decoder_input}{Ignored; pass \code{NULL}. No input is needed when building the compitational graph.}
+\item{decoder_input}{Ignored; pass \code{NULL}. No input is needed when building the computational graph.}
 
 \item{decoder_info}{List defining the decoder architecture, e.g.
 \code{list(list("dense", 80, "relu"), list("dropout", 0.1), list("dense", 100, "relu"))}.
@@ -58,7 +58,7 @@ Bernoulli heads output logits passed through sigmoid to extract probabilities,
 and Categorical heads use Gumbel–Softmax with the given \code{temperature}.
 
 If \code{lip_dec = 1}, dense hidden layers are wrapped with
-#' spectral normalization using \code{pi_dec} power iterations.
+spectral normalization using \code{pi_dec} power iterations.
 }
 \examples{
 \donttest{
