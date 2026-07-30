@@ -23,6 +23,11 @@ Imports:
     reticulate,
     tensorflow
 Suggests:
-    caret
+    caret,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
 SystemRequirements: Python (>= 3.8); TensorFlow (>= 2.10); Keras; TensorFlow Addons
 LazyData: true
+VignetteBuilder: knitr
+Config/testthat/edition: 3

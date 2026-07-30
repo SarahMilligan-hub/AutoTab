@@ -1,0 +1,13 @@
+name: r-autotab-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy=1.26.4
+  - scipy=1.15.2
+  - pip=25.0.1
+  - pip:
+      - tensorflow==2.14.0
+      - keras==2.14.0
+      - tensorflow-addons==0.22.0

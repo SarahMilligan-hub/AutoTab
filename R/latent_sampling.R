@@ -42,6 +42,8 @@
 #'   # Convert to R matrix for decoder prediction
 #'   z_mat <- as.matrix(z_sample)
 #'
+#'   print(z_mat)
+#'
 #' }
 #' }
 #'

@@ -1,0 +1,643 @@
+---
+title: "Introduction to Using AutoTab"
+output: rmarkdown::html_vignette
+bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Introduction to Using AutoTab}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = reticulate::py_module_available("tensorflow")
+)
+```
+
+# Introduction
+
+This vignette walks through a complete workflow using **AutoTab** on
+simulated tabular data containing a mix of continuous, binary, and
+categorical variables. We cover setting up the required
+Python/TensorFlow environment, preprocessing, training a variational
+autoencoder (VAE), and sampling synthetic data from the trained model.
+
+The workflow below is organized into five training examples, each
+highlighting a different set of hyperparameter options available in
+`VAE_train()`. These examples are not intended to represent an optimized
+model, they are meant to demonstrate how each hyperparameter is specified
+and what its effect looks like during training.
+
+| Example | Description |
+|---------|-------------|
+| 1 | A VAE executing simple functionalities |
+| 2 | A VAE executing a weighted wTAB-ELBO and separate examination of by variable reconstruction loss. |
+| 3 | A VAE executing cyclical beta annealing. |
+| 4 | A VAE executing temperature annealing. |
+| 5 | A VAE executing L2 regularization and Batch Normalization. |
+
+After training, we walk through how to rebuild a trained encoder/decoder
+from saved weights and sample synthetic observations from the model.
+
+## Simulated data in AutoTab
+```{r setup, eval = TRUE}
+library(autotab)
+```
+
+The simulated data contains 15 variables and 10,000 rows. There are
+five variables of each type: continuous, binary, and categorical.
+This dataset is accessible in the AutoTab package.
+
+| Distribution | Variable Name | Range / Levels |
+|---|---|---|
+| Continuous | Age | (18,87) |
+| Continuous | Height | (59,79) |
+| Continuous | Weight | (100,328) |
+| Continuous | SBP (Systolic Blood Pressure) | (90,188) |
+| Continuous | Cholesterol | (100,361) |
+| Binary | Female | 1=Yes; 0=No |
+| Binary | History (family history of heart attacks) | |
+| Binary | Smoke (current smoker) | |
+| Binary | Hyperten (family history of hypertension) | |
+| Binary | Heart (personal history of heart attack) | |
+| Categorical | Socio (Socioeconomic Status) | Low; Medium; High |
+| Categorical | Marital (Marital Status) | Single; Married; Divorced; Widowed |
+| Categorical | Employ (Employment Status) | Unemployed; Student; Employed; Retired |
+| Categorical | Race | Black; White; Hispanic; Other |
+| Categorical | Edu (Education) | Some College; High School; Bachelors; Graduate |
+
+
+```{r, eval = TRUE}
+data("data_example")
+str(as.data.frame(data_example))
+```
+
+
+## Preprocessing
+
+Preprocessing of the data includes removing missing values (or using an
+imputation method on the dataset), one-hot-coding, variable scaling, and
+ensuring all columns are numeric. Some recommended packages for handling
+missing data prior to preprocessing include mice and missForest
+[@buurenMiceMultivariateImputation2011; @stekhovenMissForestNonParametric2012].
+The user may also decide to use the complete case version of the intended
+dataset. We use min-max-scaling for all continuous variables, and
+one-hot-coding for the categorical variables. Out of the total one-hot-coded
+columns for a given variable only one can be true in each row of data. This
+column will be 1 and all others receive a 0 for that observation. After
+one-hot-coding, socioeconomic status goes from 1 to 3 columns, marital
+status goes from 1 to 4 columns, and so on. This increases the number of
+columns from 15 to 29.
+
+The code below creates the one-hot-coded categorical variables from the
+the categorical variables shown above, using the caret package.
+
+```{r, eval = TRUE}
+library("caret")
+encoded_data = dummyVars(~ socio + marital + employ + race + edu,
+                         data = data_example)
+one_hot_encoded = as.data.frame(predict(encoded_data,
+                                        newdata = data_example))
+```
+
+The code below is used to min-max-scale the continuous variables, the
+function min_max_scale is used from the AutoTab package.
+
+```{r, eval = TRUE}
+data_cont = subset(data_example,
+                   select = c(age, height, weight, SBP, cholesterol))
+data_scaled = as.data.frame(
+  lapply(data_cont, min_max_scale))
+```
+
+The code below binds the one-hot-coded, min-max-scaled, and binary
+variables together. In doing so, continuous variables are now in the range
+of [0,1] and the categorical variables are one-hot-coded. Additionally, all
+columns are numeric.
+
+```{r, eval = TRUE}
+data_bin = subset(data_example,
+                  select = c(female, history, smoke, hyperten, heart))
+data = cbind(data_scaled, data_bin, one_hot_encoded)
+head(data)
+```
+
+In the preprocessed dataset there are 29 columns. With this final
+preprocessed dataset AutoTab can be applied.
+
+
+## Setting up the required environment
+
+In order to use the functionalities within AutoTab that are directly
+related to training the VAE, a reticulate environment must be set up in
+the live R session. The underlying neural network components in AutoTab
+are implemented via the Keras and TensorFlow Python libraries. Managing
+the version requirements at the system level can lead to conflicts across
+Python packages.
+
+The recommended workflow is for the user to establish a Conda environment
+that has the dependencies needed for the implementation of AutoTab. A
+Conda environment is a self-contained environment that allows the user to
+have control over Python and package versions. The package reticulate is
+then used to point to the correct Conda environment. AutoTab is built and
+tested using Python 3.11 and TensorFlow 2.14.
+
+AutoTab includes a dedicated function, `install_autotab_env()`, that
+automatically builds this Conda environment using a bundled environment
+specification file. This removes the need for the user to manually
+download or create the environment file themselves.
+
+```{r, eval = FALSE}
+install_autotab_env()
+```
+
+Running this function will create a Conda environment named
+`r-autotab-env` containing the exact Python, TensorFlow, and Keras versions
+AutoTab was built and tested against. If the environment already exists,
+`install_autotab_env()` will detect this and skip rebuilding it.
+
+Once the environment has been created, it must be activated within the R
+session using reticulate.
+
+```{r, eval = FALSE}
+reticulate::use_condaenv("r-autotab-env", required = TRUE)
+reticulate::py_config()
+```
+
+The above will not be run when the vingette is ran. The user must run
+the above code themselves to activate the conda environment to have the
+remaining portions of the vingette run. Without an active conda environment
+the vingette will not run portions of the code that require the conda
+enviorment.
+
+AutoTab was built using TensorFlow version 2.14 and may be incompatible
+with some system configurations, particularly older macOS software
+environments. If compatibility issues arise, we recommend using a virtual
+environment with the required dependencies or running AutoTab in a
+cloud-based environment such as Google Colab or a computing cluster.
+
+## Running an AutoTab training step
+
+Now that the preprocessed data and training environment is ready, the next
+step is to build feat_dist and make it available to AutoTab.
+
+```{r, eval = TRUE}
+feat_dist = extracting_distribution(data_example)
+print(feat_dist)
+```
+
+The output above is in the same order, from row 1 to row 15 as the input
+data created during preprocessing. Hence, the additional function in
+AutoTab, feat_reorder, is not needed in this example.
+
+To show its utility, we will manually reorder feat_dist_temp and then
+resolve the mismatch order. The code below swaps the rows of age and
+female in feat_dist_temp.
+
+```{r, eval = TRUE}
+feat_dist_shuffled = feat_dist[sample(nrow(feat_dist)), ]
+```
+
+This results in a new feat_dist that does not match the order of the input
+data.
+
+To resolve this mis-ordering and force the same order as the preprocessed
+data the code below can be implemented.
+
+```{r, eval = TRUE}
+feat_dist_fixed = feat_reorder(feat_dist_shuffled, data)
+identical(feat_dist, feat_dist_fixed)
+```
+
+Now, the order of feat_dist_fixed matches that of the preprocessed data and
+is ready to use in AutoTab. Given that the original feat_dist already
+matched in ordering, we will use this version. To make it accessible to
+AutoTab the following code must be run:
+
+```{r, eval = TRUE}
+set_feat_dist(feat_dist)
+```
+
+With the data preprocessed and feat_dist set within the environment, a
+training statement can be run within AutoTab.
+
+### Example one
+
+Example One will run a simple VAE train statement. First, encoder_info and
+decoder_info need to be created. These two lists will describe the
+structure of the VAE encoder and decoder, along with applying any L2
+regularization and BN. Below we show the code to create encoder_info and
+decoder_info in this example.
+
+```{r, eval = TRUE}
+encoder_info = list(list("dense", 50, "tanh"), list("dense", 100, "tanh"))
+decoder_info = list(list("dense", 100, "tanh"), list("dense", 50, "tanh"))
+```
+
+The above example is a simple two layer VAE with hyperbolic tangent
+activations. Next, we will run a simple VAE train statement. First, we use
+the AutoTab function reset_seeds. This ensures reproducibility across R and
+Python. The seed 2026 is chosen as an example, the user may choose their
+own seed.
+
+```{r}
+reset_seeds(2026)
+```
+
+The code below will run a VAE step with a beta value of 0.2, a latent
+space with 10 dimensions, an early stopping criterion of 10 epochs with the
+default min_delta of 0.001, a batch size of 32, a temperature of 1.2, a
+learning rate of 0.00001, no spectral normalization, and will train the VAE
+across 10 epochs.
+
+```{r}
+example1 = VAE_train(data, encoder_info = encoder_info,
+                     decoder_info = decoder_info, latent_dim = 10,
+                     batchsize = 32, epoch = 10, beta = 0.2,
+                     temperature = 1.2, Lip_en = 0, lip_dec = 0,
+                     wait = 10, lr = 0.00001)
+```
+
+AutoTab will print summary information at each epoch. When run in an
+interactive R session, the user will also see the loss curves update live
+within the plot viewer, where the y axis is the loss value. This is not
+displayed in this document.
+
+This viewer displays three curves: the top curve is the overall loss,
+this is AutoTab's wTAB-ELBO. The middle curve is the regularization
+portion of wTAB-ELBO, and the bottom curve is the reconstruction portion.
+As training progresses, the reconstruction loss typically decreases while
+the regularization pressure increases, indicating that the latent space is
+being smoothed towards the prior while the reconstruction of the output
+data improves. Within each plot the blue line represents the loss on the
+training data and the green line represents the loss on the validation
+set.
+
+### Example two
+
+Example two will show how the user can output the loss per variable type
+with seperate = 1 added to the training statement and add optional
+weighting with weighted = 1. This feature of AutoTab can be helpful in
+identifying whether all three variable types are being trained properly
+or if any of the variable types are isolated due to gradient imbalance. If
+an imbalance is identified, the user can add recon_weights to the
+VAE_train statement with weighted = 1.
+
+```{r}
+reset_seeds(2026)
+recon_weights = c(1, 3, 1)
+example2 = VAE_train(data, encoder_info = encoder_info,
+                     decoder_info = decoder_info, latent_dim = 10,
+                     batchsize = 32, epoch = 10, beta = 0.2,
+                     temperature = 1.2, seperate = 1,
+                     weighted = 1, recon_weights = recon_weights,
+                     Lip_en = 0, lip_dec = 0, wait = 10, lr = 0.00001)
+```
+
+In this output there are 6 more tracked losses, a training and validation
+loss for each variable type. When run interactively, the plot viewer will
+also display 3 additional plots (6 in total), one for each variable type.
+
+### Example three
+
+Example Three will show how the user can apply β annealing or cyclical
+annealing. The hyperparameters in the VAE_train statement to indicate
+cyclical annealing are kl_warm, kl_cyclical, n_cycles, and ratio. The code
+below will train the VAE with cyclical annealing across 2 cycles with a
+ratio of 0.4.
+
+```{r}
+reset_seeds(2026)
+example3 = VAE_train(data, encoder_info = encoder_info,
+                     decoder_info = decoder_info,
+                     latent_dim = 10, batchsize = 32,
+                     epoch = 10, beta = 0.2,
+                     temperature = 1.2, kl_warm = TRUE,
+                     kl_cyclical = TRUE, n_cycles = 2, ratio = 0.4,
+                     Lip_en = 0, lip_dec = 0, wait = 10, lr = 0.00001)
+```
+
+In this output, the beta value that is cyclically updated is tracked.
+
+### Example four
+
+The next example will focus on temperature warming. The structure from
+Example 1 will be used with the addition of two hyperparameters: temp_warm
+and temp_epoch.
+
+```{r}
+reset_seeds(2026)
+example4 = VAE_train(data, encoder_info = encoder_info,
+                     decoder_info = decoder_info, latent_dim = 10,
+                     batchsize = 32, epoch = 10, beta = 0.2,
+                     temperature = 1.2, temp_warm = TRUE,
+                     temp_epoch = 10, Lip_en = 0, lip_dec = 0,
+                     wait = 10, lr = 0.00001)
+```
+
+The output now tracks the temperature at each epoch. This value is
+decreasing after each additional epoch.
+
+### Example five
+
+The last example shows additional options within the encoder_info and
+decoder_info statements.
+
+```{r, eval = TRUE}
+encoder_info5 = list(list("dense", 50, "tanh", 0, 0, TRUE),
+                     list("dense", 100, "tanh", 0, 0, TRUE))
+decoder_info5 = list(list("dense", 100, "tanh", 1),
+                     list("dense", 50, "tanh"))
+```
+
+```{r}
+reset_seeds(2026)
+example5 = VAE_train(data, encoder_info = encoder_info5,
+                     decoder_info = decoder_info5, latent_dim = 10,
+                     batchsize = 32, epoch = 10, beta = 0.2,
+                     temperature = 1.2, Lip_en = 0, lip_dec = 0,
+                     wait = 10, lr = 0.00001)
+```
+
+AutoTab has a dedicated help page for applying MoG priors and therefore
+these examples are excluded.
+
+## Sampling from a VAE
+
+Once the VAE has been trained, the next step is sampling from the VAE to
+understand how well the generated data represents the input data. AutoTab
+has three functions that the user can utilize to rebuild a trained VAE and
+sample from it: Encoder_weights, encoder_latent and Decoder_weights.
+
+Sampling from the VAE can be done in five steps:
+
+1. Extract the trained model weights and biases.
+2. Rebuild the trained encoder.
+3. Rebuild the trained decoder.
+4. Sample the latent space or prior.
+5. Pass the sampled latent vectors through the trained decoder.
+
+After these five steps are executed, the user can determine how the
+generated data will be transformed back to its original form (e.g.,
+reversing min-max-scaling). Step 5 provides access to the generative
+distributional parameters learned by the VAE. At this stage, the user may
+choose how to sample from these distributions to produce synthetic
+observations. Suggestions are provided in this section; however,
+alternative approaches may also be used.
+
+Below we outline the execution from step 1 to 5 using the trained VAE from
+Example one. Example one was a simple VAE with a set beta at 0.2, a latent
+dimension of 10, and two hidden layers in both the encoder and decoder.
+
+**Step One: Extract the trained model weights and biases.**
+
+```{r}
+library("dplyr")
+library("keras")
+trained_model = example1$trained_model
+```
+
+The above code is pulling the trained_model from the saved training
+object, example1. The other saved information in example1 is the loss
+history, this is not needed for sampling from a trained VAE.
+
+**Step Two: Rebuild the trained encoder.**
+
+```{r}
+weights_encoder = Encoder_weights(encoder_layers = 2,
+                                  trained_model, lip_enc = 0, pi_enc = 0,
+                                  BNenc_layers = 0, learn_BN = 0)
+latent_encoder = encoder_latent(encoder_input = data,
+                                encoder_info = encoder_info, latent_dim = 10,
+                                Lip_en = 0, power_iterations = 0)
+print(latent_encoder)
+```
+
+The output above shows that the encoder has been rebuilt. The input layer
+has 29 columns, the two dense layers have 50 and 100 nodes, and the
+results of the encoder are z_mean and z_log_var. Latent_encoder can be
+thought of as the skeleton for the encoder. Now, we need to apply weights
+to the encoder skeleton.
+
+```{r}
+latent_encoder %>% set_weights(weights_encoder)
+```
+
+Now, the encoder is built with the learned weights and biases. These are
+the typical weights and biases seen in a neural network.
+
+**Step Three: Rebuild the trained decoder.**
+
+```{r, results = "hide"}
+weights_decoder = Decoder_weights(encoder_layers = 2,
+                                  trained_model, lip_enc = 0, pi_enc = 0,
+                                  prior_learn = "fixed", BNenc_layers = 0,
+                                  learn_BN = 0)
+decoder = decoder_model(decoder_input = NULL,
+                        decoder_info = decoder_info, latent_dim = 10,
+                        feat_dist = feat_dist, lip_dec = 0, pi_dec = 0)
+print(decoder)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat('<details>\n<summary>Click to expand full decoder architecture</summary>\n\n<pre><code>')
+cat(htmltools::htmlEscape(paste(capture.output(print(decoder)), collapse = "\n")))
+cat('</code></pre>\n</details>\n')
+```
+
+
+Based on the output above it is clear that decoder takes a
+sample from the latent space with the correct dimension of 10, followed by
+dense hidden layers with 100 and 50 nodes.
+
+Now that the decoder skeleton is built, the learned weights need to be
+applied.
+
+```{r}
+decoder %>% set_weights(weights_decoder)
+```
+
+Now, the decoder is built with the learned weights.
+
+**Step Four: Sample the latent space or prior.**
+
+Now that the VAE is built, the user can either sample from the chosen
+prior, or sample from the learned posterior (the latent space). In this
+example, a sample from the prior will be used, in this case N(0, 1).
+
+```{r}
+sample_prior <- matrix(rnorm(nrow(data) * 10),
+                      nrow = nrow(data), ncol = 10)
+```
+
+This latent sample can be used in step 5.
+
+If the user desired to sample directly from the latent space, or to
+visualize the latent space from a latent sample, the steps below could be
+used.
+
+```{r}
+input_data <- as.matrix(data)
+latent_space = predict(latent_encoder, input_data)
+dim(latent_space[[1]])
+dim(latent_space[[2]])
+```
+
+The output in the console shows 313 due to our batch size of 32 over
+10,000 samples (10,000/32 ≈ 313). This is an automatic output from Keras by
+using the function predict.
+
+The resulting latent_space is a list with two objects, one that represents
+the mean and one that represents that log variance that are learned
+through the encoder. Each one has a dimension of 10,000 by 10. This is the
+size of the data by the chosen latent dimension.
+
+```{r}
+z_mean = latent_space[[1]]
+z_log_var = latent_space[[2]]
+```
+
+Now that the latent space is separated into its respective parts the
+reparameterization trick can be applied, as implemented in
+`Latent_sample()`.
+
+```{r}
+sample_latent_fromposterior = as.matrix(Latent_sample(z_mean, z_log_var))
+```
+
+**Step Five: Pass the sampled latent vectors through the trained decoder.**
+
+This step will use the sample from the latent space and put it through the
+trained decoder to create a generative output.
+
+```{r}
+decoder_sample = predict(decoder, sample_prior)
+```
+
+decoder_sample now has the generative parameters from the trained VAE.
+
+The dimension of this dataset is the total sample size by the decoder
+output layer size (in this example 10000 by 34). In our example, the input
+data has 29 columns, 5 of which are continuous. The decoder outputs 2
+columns for each continuous variable, a mean and SD. Hence, there are 5
+additional columns in the decoder output.
+
+## Sampling from the generative results
+
+This section discusses possible options for creating the synthetic dataset
+based on the generative results from the decoder. Some recommendations are
+provided for AutoTab; however, the final choice is up to the user, and
+multiple approaches are possible. If additional preprocessing steps were
+applied to the data, they must be reversed accordingly. For this reason,
+the generative step is application dependent, and careful consideration
+should be given when implementing it.
+
+The order of the generative sample will match the order of feat_dist. Based
+on the previous output of feat_dist, the first 5 variables were
+continuous. That means the first 10 columns belong to the continuous
+variables. To generate a sample from each output we sample from the
+following distribution:
+
+$$x \sim N\left(\mu_\theta(z), \sigma^2_\theta(z)\right),$$
+
+where $\theta$ are the parameters of the decoder and $z$ is the latent
+sample. The parameters for the distribution are within the R object
+decoder_sample created in Step Five.
+
+The generative parameters for a continuous variable are the mean and SD.
+The user may decide to sample from a distribution using these values or
+first undo the min-max-scaling and sample from that distribution. In this
+example, using the variable age, we first undo the min-max-scaling and
+then sample.
+
+Let:
+
+$$x = R * x_{scaled} + min,$$
+
+where $R = max - min$, min is the minimum of age in the original data, max
+is the maximum of age in the original data, and $x$ is the unscaled
+decoder output. Then:
+
+$$E[x] = E[R * x_{scaled} + min] = R \, E[x_{scaled}] + min$$
+
+and
+
+$$Var(x) = Var(R * x_{scaled} + min) = R^2 Var(x_{scaled})$$
+
+so,
+
+$$\sigma = R * \sigma_{scaled}, \quad \mu = R * \mu_{scaled} + min$$
+
+The code to implement this, on the variable age as an illustrative
+example, is shown below.
+
+```{r}
+scaling_min = min(data_example$age)
+scaling_max = max(data_example$age)
+decoder_sample[,1] = (decoder_sample[,1] * (scaling_max - scaling_min)
+                      + scaling_min)
+decoder_sample[,2] = decoder_sample[,2] * (scaling_max - scaling_min)
+```
+
+Now the first row of age can be sampled from N(mean, SD²), the unscaled
+generative Gaussian distribution using the following code:
+
+```{r}
+decoder_sample[1, 1] = rnorm(1, mean = decoder_sample[1,1],
+                               sd = decoder_sample[1,2])
+```
+
+For binary variables, the user can decide to either sample from a
+Bernoulli distribution or choose the maximum a posteriori (MAP). A MAP
+estimate corresponds to the most probable class label given the
+probabilistic output [@murphyMachineLearningProbabilistic2012]. Choosing
+between these approaches is left to the user. The code below displays how
+MAP can be applied to the first row of the 11th column, which is a binary
+variable based on feat_dist.
+
+```{r}
+decoder_sample[1, 11] = ifelse(decoder_sample[1, 11] > 0.5, 1, 0)
+decoder_sample[1, 11]
+```
+
+The code above takes the predicted value and maps it to 1 since the
+probability was greater than 0.5.
+
+For categorical variables, the user can choose to sample from a
+multinomial distribution with one draw based on the column probabilities
+or use another MAP approach.
+
+Choosing between another generative sample from the categorical
+distribution versus taking the most probable category from the decoder
+output is again a design choice and is up to the user. The code below
+displays how argmax can be applied to the first row of columns 16–18,
+which represents a categorical variable based on feat_dist.
+
+```{r}
+decoder_sample[1, 16:18] = as.integer(decoder_sample[1, 16:18] ==
+                                            max(decoder_sample[1, 16:18]))
+```
+
+After applying argmax, the column will indicate the one-hot-coded vector.
+
+# Conclusion
+
+This vignette walked through a complete AutoTab workflow: simulating and
+preprocessing mixed-type tabular data, setting up the required Python/
+TensorFlow environment, training a variational autoencoder under five
+different hyperparameter configurations, and rebuilding a trained encoder
+and decoder to sample synthetic observations. The five training examples
+demonstrated core AutoTab features including weighted reconstruction loss,
+Beta annealing, Gumbel-softmax temperature annealing, and regularization
+options, though they are not intended to represent an optimized model for
+this dataset.
+
+For guidance on Mixture-of-Gaussians priors, see the `mog_prior` help
+page. For further details on any individual function discussed here,
+consult the corresponding function documentation (e.g., `?VAE_train`,
+`?Encoder_weights`, `?Latent_sample`).
+
+
+# References

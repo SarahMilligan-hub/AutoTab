@@ -25,12 +25,7 @@ set_feat_dist <- function(feat_dist) {
 }
 
 #' Get the stored feature distribution
-#'
-#' Retrieves the `feat_dist` object previously stored by
-#' `set_feat_dist()`.  Throws an error if it has not been set.
-#'
-#' @return A data.frame containing feature distribution metadata.
-#' @export
+#' @keywords internal
 get_feat_dist <- function() {
   if (!exists("feat_dist", envir = .AutoTab_cache, inherits = FALSE)) {
     stop("feat_dist not set. Run set_feat_dist(feat_dist) first.")
