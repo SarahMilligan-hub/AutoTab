@@ -31,9 +31,7 @@
 #' @examples
 #'
 #'  \donttest{
-#' if (reticulate::py_module_available("tensorflow") &&
-#' exists("training") &&
-#' exists("data")) {
+#' if (reticulate::py_module_available("tensorflow")) {
 #'
 #'  library("autotab")
 #'  library("caret")
@@ -139,14 +137,8 @@ Encoder_weights = function(encoder_layers, trained_model,lip_enc, pi_enc, BNenc_
 #' @seealso [Encoder_weights()], [Latent_sample()], [Decoder_weights()]
 #'
 #' @examples
-#' encoder_info <- list(
-#'   list("dense", 100, "relu"),
-#'   list("dense",  80, "relu")
-#' )
 #' \donttest{
-#' if (reticulate::py_module_available("tensorflow") &&
-#' exists("training") &&
-#' exists("data")) {
+#' if (reticulate::py_module_available("tensorflow")) {
 #'
 #'  library("autotab")
 #'  library("caret")
@@ -295,8 +287,7 @@ encoder_latent = function(encoder_input,encoder_info,latent_dim,Lip_en, power_it
 #'
 #' @examples
 #' \donttest{
-#' if (reticulate::py_module_available("tensorflow") &&
-#'     exists("training")) {
+#' if (reticulate::py_module_available("tensorflow")) {
 #'
 #'  library("autotab")
 #'  library("caret")

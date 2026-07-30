@@ -135,9 +135,7 @@ decoder_activation = function(input, feat_dist, min_val=1e-3, max_std=10.0,guas_
 #'
 #' @examples
 #' \donttest{
-#' if (reticulate::py_module_available("tensorflow") &&
-#'     exists("training") &&
-#'     exists("feat_dist")) {
+#' if (reticulate::py_module_available("tensorflow")) {
 #'
 #'   library("autotab")
 #'   library("caret")
